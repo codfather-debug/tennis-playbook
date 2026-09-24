@@ -1,0 +1,2385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Playbook">
+<meta name="theme-color" content="#0a0a0b">
+<title>Playbook</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+  :root {
+    --bg: #0a0a0b;
+    --surface: #0f0f11;
+    --card: #16161a;
+    --card-2: #1c1c21;
+    --border: rgba(255,255,255,0.07);
+    --text: #f5f5f7;
+    --muted: rgba(255,255,255,0.42);
+    --muted-2: rgba(255,255,255,0.6);
+    --green: #8fd13f;
+    --yellow: #f5c542;
+    --blue: #5b9bf5;
+    --red: #ef5a5a;
+    --orange: #f0954a;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', sans-serif;
+    max-width: 480px;
+    margin: 0 auto;
+    padding-bottom: 90px;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── Top bar ── */
+  .topbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 18px 20px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .topbar .app-name { font-size: 17px; font-weight: 700; }
+  .topbar .signout { font-size: 13px; color: var(--muted); display: flex; align-items: center; gap: 5px; }
+
+  .backrow {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 20px 6px;
+    color: var(--muted-2);
+    font-size: 15px;
+    font-weight: 500;
+  }
+
+  .page-title {
+    padding: 6px 20px 18px;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--muted-2);
+  }
+
+  /* ── Section wrapper ── */
+  .section-block { padding: 0 16px; margin-bottom: 26px; }
+  .section-block:first-of-type { margin-top: 4px; }
+
+  .block-label {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    padding: 0 4px 12px;
+  }
+
+  /* ── Win % stat cards ── */
+  .stat-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .stat-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 6px;
+    text-align: center;
+  }
+  .stat-pct {
+    font-size: 24px;
+    font-weight: 800;
+    letter-spacing: -0.5px;
+  }
+  .stat-label {
+    font-size: 9.5px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-top: 4px;
+  }
+  .insight-box {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 14px;
+    font-size: 13.5px;
+    line-height: 1.5;
+    color: var(--muted-2);
+  }
+  .insight-box b { color: var(--green); font-weight: 700; }
+
+  /* ── Shots per point ── */
+  .shot-row { margin-bottom: 14px; }
+  .shot-row:last-child { margin-bottom: 8px; }
+  .shot-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 6px;
+  }
+  .shot-name { font-size: 14px; font-weight: 700; }
+  .shot-sub { font-size: 12px; color: var(--muted); font-weight: 500; margin-left: 6px; }
+  .shot-pct { font-size: 14px; font-weight: 800; }
+  .bar-track {
+    height: 6px;
+    border-radius: 99px;
+    background: rgba(255,255,255,0.08);
+    overflow: hidden;
+  }
+  .bar-fill { height: 100%; border-radius: 99px; }
+  .shot-caption {
+    font-size: 12px;
+    color: var(--muted);
+    margin-top: 10px;
+    line-height: 1.5;
+  }
+
+  /* ── 8 strategies list ── */
+  .strat-hint { font-size: 12.5px; color: var(--muted); margin-bottom: 12px; }
+  .strat-item {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 15px 16px;
+    margin-bottom: 8px;
+    cursor: pointer;
+  }
+  .strat-num {
+    width: 26px;
+    height: 26px;
+    border-radius: 8px;
+    background: rgba(255,255,255,0.08);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 12px;
+    font-weight: 800;
+    color: var(--muted-2);
+    flex-shrink: 0;
+  }
+  .strat-name { flex: 1; font-size: 14.5px; font-weight: 700; }
+  .strat-chevron { color: var(--muted); font-size: 18px; }
+  .strat-detail {
+    display: none;
+    padding: 4px 16px 16px 56px;
+    margin-top: -10px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-top: none;
+    border-radius: 0 0 14px 14px;
+    margin-bottom: 8px;
+    font-size: 13.5px;
+    line-height: 1.55;
+    color: var(--muted-2);
+  }
+  .strat-item.open + .strat-detail { display: block; }
+  .strat-item.open { border-radius: 14px 14px 0 0; margin-bottom: 0; }
+  .strat-item.open .strat-chevron { transform: rotate(90deg); }
+
+  /* ── Court zones ── */
+  .zone-card {
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    border: 1px solid;
+  }
+  .zone-card.kill    { background: rgba(143,209,63,0.08);  border-color: rgba(143,209,63,0.25); }
+  .zone-card.attack  { background: rgba(245,197,66,0.08);  border-color: rgba(245,197,66,0.25); }
+  .zone-card.neutral { background: rgba(91,155,245,0.08);  border-color: rgba(91,155,245,0.25); }
+  .zone-card.defend  { background: rgba(239,90,90,0.08);   border-color: rgba(239,90,90,0.25); }
+  .zone-top { display: flex; align-items: baseline; gap: 8px; margin-bottom: 4px; }
+  .zone-name { font-size: 14.5px; font-weight: 800; }
+  .zone-card.kill .zone-name    { color: var(--green); }
+  .zone-card.attack .zone-name  { color: var(--yellow); }
+  .zone-card.neutral .zone-name { color: var(--blue); }
+  .zone-card.defend .zone-name  { color: var(--red); }
+  .zone-loc { font-size: 12px; color: var(--muted); font-weight: 500; }
+  .zone-desc { font-size: 13px; color: var(--muted-2); line-height: 1.5; }
+
+  /* ── Pattern cards ── */
+  .pattern-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .pattern-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+  }
+  .pattern-icon { font-size: 17px; }
+  .pattern-title { font-size: 15px; font-weight: 800; }
+  .pattern-step {
+    display: grid;
+    grid-template-columns: 60px 1fr;
+    gap: 12px;
+    margin-bottom: 9px;
+    font-size: 13px;
+  }
+  .pattern-step:last-of-type { margin-bottom: 10px; }
+  .pattern-step .step-tag {
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 11px;
+    letter-spacing: 0.03em;
+    padding-top: 1px;
+  }
+  .pattern-step .step-desc { color: var(--muted-2); line-height: 1.45; }
+  .pattern-note {
+    font-size: 12.5px;
+    color: var(--green);
+    font-weight: 600;
+    padding-top: 10px;
+    border-top: 1px solid var(--border);
+  }
+  .pattern-note.blue { color: var(--blue); }
+
+  /* ── Serve/Return section ── */
+  .subhead {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin: 16px 0 10px;
+  }
+  .subhead:first-child { margin-top: 0; }
+  .sr-row {
+    display: grid;
+    grid-template-columns: 40px 1fr;
+    gap: 12px;
+    margin-bottom: 12px;
+    font-size: 13px;
+  }
+  .sr-tag { font-weight: 800; color: var(--muted-2); font-size: 12px; }
+  .sr-body strong { display: block; font-weight: 700; font-size: 13.5px; margin-bottom: 2px; }
+  .sr-body span { color: var(--muted-2); line-height: 1.45; }
+
+  .goal-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+  }
+  .goal-row:last-child { border-bottom: none; }
+  .goal-label { color: var(--muted-2); }
+  .goal-val { font-weight: 800; }
+
+  .pass-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 9px 0;
+    border-bottom: 1px solid var(--border);
+    font-size: 13.5px;
+    align-items: center;
+  }
+  .pass-row:last-child { border-bottom: none; }
+  .pass-label { color: var(--muted); font-weight: 600; }
+  .pass-val { font-weight: 800; }
+  .pass-val.primary { color: var(--yellow); }
+
+  /* ── Keys for success ── */
+  .key-row {
+    display: flex;
+    gap: 12px;
+    align-items: flex-start;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+  }
+  .key-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .key-text { font-size: 13.5px; line-height: 1.5; color: var(--muted-2); }
+
+  /* ── divider ── */
+  .hr {
+    height: 8px;
+    background: rgba(255,255,255,0.02);
+    border-top: 1px solid var(--border);
+    border-bottom: 1px solid var(--border);
+    margin: 0 0 26px;
+  }
+
+  /* ── placeholder sections (not yet screenshotted) ── */
+  .todo-section {
+    margin: 0 16px 20px;
+    background: var(--card);
+    border: 1px dashed rgba(255,255,255,0.15);
+    border-radius: 14px;
+    padding: 18px;
+    color: var(--muted);
+    font-size: 13px;
+    text-align: center;
+  }
+  .todo-section .todo-icon { font-size: 22px; margin-bottom: 6px; }
+
+  /* ── bottom nav ── */
+  .bottomnav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    max-width: 480px;
+    margin: 0 auto;
+    background: var(--bg);
+    border-top: 1px solid var(--border);
+    display: flex;
+    padding: 10px 0 max(10px, env(safe-area-inset-bottom));
+  }
+  .navitem {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 3px;
+    font-size: 10.5px;
+    font-weight: 600;
+    color: var(--muted);
+  }
+  .navitem.active { color: var(--text); }
+  .navitem .navicon { font-size: 19px; }
+
+  /* ── Hero gradient card ── */
+  .hero-card {
+    border-radius: 18px;
+    padding: 20px;
+    margin: 0 16px 20px;
+    border: 1px solid;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-card.green  { background: linear-gradient(160deg, rgba(143,209,63,0.14), rgba(143,209,63,0.02)); border-color: rgba(143,209,63,0.25); }
+  .hero-card.blue   { background: linear-gradient(160deg, rgba(91,155,245,0.14), rgba(91,155,245,0.02)); border-color: rgba(91,155,245,0.25); }
+  .hero-eyebrow {
+    font-size: 11px;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .hero-card.green .hero-eyebrow { color: var(--green); }
+  .hero-card.blue .hero-eyebrow  { color: var(--blue); }
+  .hero-title { font-size: 22px; font-weight: 800; margin-bottom: 8px; letter-spacing: -0.3px; }
+  .hero-desc { font-size: 13.5px; color: var(--muted-2); line-height: 1.55; margin-bottom: 14px; }
+  .hero-stats {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .hero-stat {
+    background: rgba(255,255,255,0.05);
+    border-radius: 12px;
+    padding: 10px 6px;
+    text-align: center;
+  }
+  .hero-stat .hs-label { font-size: 10px; color: var(--muted); font-weight: 600; margin-bottom: 3px; }
+  .hero-stat .hs-val { font-size: 15px; font-weight: 800; }
+  .hero-stat .hs-val.blue { color: var(--blue); }
+  .hero-bullet {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--muted-2);
+  }
+  .hero-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--green); flex-shrink: 0; }
+
+  /* ── Info rows (icon + title + desc) with card background ── */
+  .info-card {
+    display: flex;
+    gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+  }
+  .info-icon { font-size: 18px; flex-shrink: 0; margin-top: 1px; }
+  .info-body strong { display: block; font-size: 14px; font-weight: 700; margin-bottom: 3px; }
+  .info-body span { font-size: 13px; color: var(--muted-2); line-height: 1.5; }
+
+  /* ── Priority box (return game 1st/2nd serve) ── */
+  .priority-box {
+    border-radius: 14px;
+    padding: 16px;
+    margin-bottom: 12px;
+    border: 1px solid;
+  }
+  .priority-box.def   { background: rgba(91,155,245,0.06);  border-color: rgba(91,155,245,0.25); }
+  .priority-box.off   { background: rgba(143,209,63,0.06);  border-color: rgba(143,209,63,0.25); }
+  .priority-title {
+    font-size: 13.5px;
+    font-weight: 800;
+    margin-bottom: 10px;
+  }
+  .priority-box.def .priority-title { color: var(--blue); }
+  .priority-box.off .priority-title { color: var(--green); }
+  .priority-list { list-style: none; }
+  .priority-list li {
+    font-size: 13px;
+    color: var(--muted-2);
+    padding: 5px 0 5px 16px;
+    position: relative;
+    line-height: 1.4;
+  }
+  .priority-list li::before {
+    content: "•";
+    position: absolute;
+    left: 2px;
+    color: var(--muted);
+  }
+  .priority-box.def .priority-list li::before { color: var(--blue); }
+  .priority-box.off .priority-list li::before { color: var(--green); }
+
+  /* ── numbered pattern cards (return patterns) ── */
+  .num-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 15px 16px;
+    margin-bottom: 8px;
+  }
+  .num-head { display: flex; align-items: center; gap: 10px; margin-bottom: 8px; }
+  .num-badge {
+    width: 22px; height: 22px;
+    border-radius: 50%;
+    background: rgba(143,209,63,0.15);
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .num-title { font-size: 14.5px; font-weight: 700; flex: 1; }
+  .num-desc { font-size: 13px; color: var(--muted-2); line-height: 1.5; margin-bottom: 10px; }
+  .num-tags { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .num-tag {
+    background: rgba(255,255,255,0.05);
+    border-radius: 10px;
+    padding: 8px 10px;
+  }
+  .num-tag .nt-label { font-size: 9.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: var(--muted); margin-bottom: 3px; }
+  .num-tag .nt-val { font-size: 12px; color: var(--muted-2); line-height: 1.35; }
+
+  /* ── mental approach mini cards ── */
+  .mini-highlight {
+    padding: 12px 14px;
+    border-radius: 12px;
+    background: rgba(245,197,66,0.06);
+    border: 1px solid rgba(245,197,66,0.2);
+    margin-bottom: 8px;
+  }
+  .mini-highlight .mh-title { font-size: 12.5px; font-weight: 800; color: var(--yellow); margin-bottom: 4px; }
+  .mini-highlight .mh-body { font-size: 13px; color: var(--muted-2); line-height: 1.5; }
+
+  /* ── quote-style rows (reading the serve) ── */
+  .cue-icon-row {
+    display: flex;
+    gap: 12px;
+    padding: 13px 0;
+    border-bottom: 1px solid var(--border);
+  }
+  .cue-icon-row:last-child { border-bottom: none; }
+  .cue-emoji { font-size: 17px; flex-shrink: 0; margin-top: 1px; width: 22px; text-align: center; }
+  .cue-body strong { display: block; font-size: 13.5px; font-weight: 700; margin-bottom: 2px; }
+  .cue-body span { font-size: 12.5px; color: var(--muted-2); line-height: 1.45; }
+
+  /* ── timeline cards (warm-up on-court protocol) ── */
+  .timeline-card {
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 8px;
+    border: 1px solid;
+    display: grid;
+    grid-template-columns: 52px 1fr;
+    gap: 12px;
+  }
+  .timeline-card.c1 { background: rgba(143,209,63,0.06); border-color: rgba(143,209,63,0.22); }
+  .timeline-card.c2 { background: rgba(91,155,245,0.06); border-color: rgba(91,155,245,0.22); }
+  .timeline-card.c3 { background: rgba(192,132,252,0.06); border-color: rgba(192,132,252,0.22); }
+  .timeline-card.c4 { background: rgba(245,197,66,0.06); border-color: rgba(245,197,66,0.22); }
+  .timeline-card.c5 { background: rgba(239,90,90,0.06); border-color: rgba(239,90,90,0.22); }
+  .tl-time { font-size: 13px; font-weight: 800; }
+  .timeline-card.c1 .tl-time { color: var(--green); }
+  .timeline-card.c2 .tl-time { color: var(--blue); }
+  .timeline-card.c3 .tl-time { color: #c084fc; }
+  .timeline-card.c4 .tl-time { color: var(--yellow); }
+  .timeline-card.c5 .tl-time { color: var(--red); }
+  .tl-dur { font-size: 10.5px; color: var(--muted); margin-top: 1px; }
+  .tl-title { font-size: 14px; font-weight: 700; margin-bottom: 6px; display: flex; align-items: center; gap: 6px; }
+  .tl-list { list-style: none; }
+  .tl-list li { font-size: 12.5px; color: var(--muted-2); line-height: 1.5; padding-left: 12px; position: relative; }
+  .tl-list li::before { content: "·"; position: absolute; left: 0; }
+
+  /* ── simple move rows (dynamic movement) ── */
+  .move-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 12px 14px;
+    margin-bottom: 6px;
+  }
+  .move-name { font-size: 13.5px; font-weight: 700; margin-bottom: 2px; }
+  .move-desc { font-size: 12px; color: var(--muted); }
+  .move-badge {
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--muted-2);
+    background: rgba(255,255,255,0.07);
+    padding: 4px 9px;
+    border-radius: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+    margin-left: 10px;
+  }
+
+  /* ── checklist ── */
+  .check-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 13px 15px;
+    margin-bottom: 6px;
+    font-size: 13.5px;
+    color: var(--muted-2);
+    line-height: 1.4;
+  }
+  .check-circle {
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    border: 2px solid rgba(255,255,255,0.25);
+    flex-shrink: 0;
+  }
+  .note-box {
+    background: rgba(255,255,255,0.03);
+    border: 1px dashed rgba(255,255,255,0.15);
+    border-radius: 12px;
+    padding: 13px 15px;
+    font-size: 12.5px;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-top: 4px;
+  }
+  .note-box strong { color: var(--muted-2); display: block; margin-bottom: 3px; font-size: 11px; letter-spacing: 0.05em; text-transform: uppercase; }
+
+  /* ── quick reference table ── */
+  .ref-table { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .ref-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    font-size: 13px;
+  }
+  .ref-row:last-child { border-bottom: none; }
+  .ref-label { color: var(--muted-2); }
+  .ref-val { font-weight: 800; font-size: 13px; }
+
+  /* ── expandable rule card ── */
+  .exp-card {
+    border-radius: 14px;
+    border: 1px solid;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .exp-card.green  { border-color: rgba(143,209,63,0.25); }
+  .exp-card.orange { border-color: rgba(240,149,74,0.25); }
+  .exp-card.red    { border-color: rgba(239,90,90,0.25); }
+  .exp-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+  }
+  .exp-card.green .exp-head  { background: rgba(143,209,63,0.07); }
+  .exp-card.orange .exp-head { background: rgba(240,149,74,0.07); }
+  .exp-card.red .exp-head    { background: rgba(239,90,90,0.07); }
+  .exp-icon { font-size: 16px; }
+  .exp-title { font-size: 14px; font-weight: 800; flex: 1; }
+  .exp-card.green .exp-title  { color: var(--green); }
+  .exp-card.orange .exp-title { color: var(--orange); }
+  .exp-card.red .exp-title    { color: var(--red); }
+  .exp-chevron { color: var(--muted); transition: transform 0.2s; }
+  .exp-head.open .exp-chevron { transform: rotate(180deg); }
+  .exp-body {
+    display: none;
+    padding: 4px 16px 16px;
+    background: var(--card);
+  }
+  .exp-head.open + .exp-body { display: block; }
+  .exp-body ul { list-style: none; }
+  .exp-body li {
+    font-size: 13px;
+    color: var(--muted-2);
+    line-height: 1.5;
+    padding: 6px 0 6px 16px;
+    position: relative;
+  }
+  .exp-body li::before { content: "›"; position: absolute; left: 0; color: var(--muted); font-weight: 700; }
+
+  /* ── tiebreak table ── */
+  .tb-toggle {
+    display: flex;
+    background: var(--card);
+    border-radius: 12px;
+    padding: 4px;
+    margin-bottom: 12px;
+    border: 1px solid var(--border);
+  }
+  .tb-toggle-btn {
+    flex: 1;
+    text-align: center;
+    padding: 8px;
+    border-radius: 9px;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--muted);
+  }
+  .tb-toggle-btn.active { background: var(--blue); color: #fff; }
+  .tb-table { background: var(--card); border: 1px solid var(--border); border-radius: 14px; overflow: hidden; }
+  .tb-header-row, .tb-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1.4fr;
+    padding: 11px 16px;
+    font-size: 12.5px;
+    align-items: center;
+  }
+  .tb-header-row {
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 10.5px;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    border-bottom: 1px solid var(--border);
+  }
+  .tb-row { border-bottom: 1px solid var(--border); color: var(--muted-2); }
+  .tb-row:last-child { border-bottom: none; }
+  .tb-row.change-ends {
+    grid-template-columns: 1fr;
+    text-align: center;
+    color: var(--muted);
+    font-weight: 700;
+    font-size: 11px;
+    background: rgba(255,255,255,0.02);
+  }
+  .tb-server { font-weight: 800; color: var(--blue); }
+
+  /* ── code category badges ── */
+  .code-cat {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 4px;
+    font-size: 13.5px;
+    font-weight: 800;
+    color: var(--text);
+    border-top: 1px solid var(--border);
+    margin-top: 4px;
+  }
+  .code-cat:first-child { border-top: none; margin-top: 0; }
+  .code-cat .cat-count { margin-left: auto; font-size: 11px; font-weight: 600; color: var(--muted); }
+  .code-rule {
+    padding: 12px 4px 12px 14px;
+    border-bottom: 1px solid var(--border);
+  }
+  .code-rule:last-child { border-bottom: none; }
+  .code-rule strong { display: block; font-size: 13px; font-weight: 700; margin-bottom: 3px; }
+  .code-rule span { font-size: 12.5px; color: var(--muted-2); line-height: 1.5; }
+  .golden-rule {
+    background: rgba(245,197,66,0.08);
+    border: 1px solid rgba(245,197,66,0.25);
+    border-radius: 14px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+    font-size: 13px;
+    line-height: 1.5;
+    color: var(--muted-2);
+  }
+  .golden-rule strong { color: var(--yellow); }
+
+  /* ── formation card (doubles) ── */
+  .formation-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 15px 16px;
+    margin-bottom: 8px;
+  }
+  .formation-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+  .formation-name { font-size: 14.5px; font-weight: 800; }
+  .formation-badge {
+    font-size: 10px;
+    font-weight: 800;
+    letter-spacing: 0.04em;
+    padding: 4px 9px;
+    border-radius: 7px;
+  }
+  .formation-badge.aggressive { background: rgba(239,90,90,0.15); color: var(--red); }
+  .formation-badge.defensive  { background: rgba(91,155,245,0.15); color: var(--blue); }
+  .formation-badge.standard   { background: rgba(255,255,255,0.1); color: var(--muted-2); }
+  .pc-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .pc-col-label { font-size: 10px; font-weight: 800; letter-spacing: 0.05em; margin-bottom: 6px; }
+  .pc-col-label.pro { color: var(--green); }
+  .pc-col-label.con { color: var(--red); }
+  .pc-col ul { list-style: none; }
+  .pc-col li { font-size: 12px; color: var(--muted-2); line-height: 1.5; padding-left: 12px; position: relative; margin-bottom: 3px; }
+  .pc-col li::before { content: "•"; position: absolute; left: 0; color: var(--muted); }
+
+  /* ── role card (doubles) ── */
+  .role-card {
+    border-radius: 14px;
+    padding: 15px 16px;
+    margin-bottom: 8px;
+    border: 1px solid;
+  }
+  .role-card.a { background: rgba(143,209,63,0.06); border-color: rgba(143,209,63,0.22); }
+  .role-card.b { background: rgba(91,155,245,0.06); border-color: rgba(91,155,245,0.22); }
+  .role-card.c { background: rgba(245,197,66,0.06); border-color: rgba(245,197,66,0.22); }
+  .role-card.d { background: rgba(192,132,252,0.06); border-color: rgba(192,132,252,0.22); }
+  .role-title { font-size: 14px; font-weight: 800; margin-bottom: 8px; }
+  .role-card.a .role-title { color: var(--green); }
+  .role-card.b .role-title { color: var(--blue); }
+  .role-card.c .role-title { color: var(--yellow); }
+  .role-card.d .role-title { color: #c084fc; }
+  .role-card ul { list-style: none; }
+  .role-card li { font-size: 12.5px; color: var(--muted-2); line-height: 1.5; padding: 3px 0 3px 14px; position: relative; }
+  .role-card li::before { content: "›"; position: absolute; left: 0; color: var(--muted); }
+
+  /* ── principle card (doubles fundamentals) ── */
+  .principle-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    margin-bottom: 8px;
+    overflow: hidden;
+  }
+  .principle-head {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 14px 16px;
+    cursor: pointer;
+  }
+  .principle-num {
+    width: 24px; height: 24px;
+    border-radius: 50%;
+    background: rgba(143,209,63,0.15);
+    color: var(--green);
+    font-size: 11px;
+    font-weight: 800;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .principle-title { font-size: 14px; font-weight: 700; flex: 1; }
+  .principle-chevron { color: var(--muted); transition: transform 0.2s; }
+  .principle-head.open .principle-chevron { transform: rotate(180deg); }
+  .principle-body {
+    display: none;
+    padding: 0 16px 16px 50px;
+    font-size: 13px;
+    color: var(--muted-2);
+    line-height: 1.55;
+  }
+  .principle-head.open + .principle-body { display: block; }
+  .principle-body ul { list-style: none; margin-top: 8px; }
+  .principle-body li { padding: 4px 0 4px 14px; position: relative; }
+  .principle-body li::before { content: "›"; position: absolute; left: 0; color: var(--muted); }
+
+  /* ── court diagram ── */
+  .court-diagram-wrap {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 10px;
+  }
+  .court-diagram-title {
+    text-align: center;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 2px;
+  }
+  .court-diagram-sub {
+    text-align: center;
+    font-size: 10.5px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .legend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 20px;
+  }
+  .legend-chip {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 11px 12px;
+  }
+  .legend-dot { width: 9px; height: 9px; border-radius: 50%; flex-shrink: 0; }
+  .legend-dot.kill    { background: var(--green); }
+  .legend-dot.attack  { background: var(--orange); }
+  .legend-dot.neutral { background: var(--blue); }
+  .legend-dot.defend  { background: var(--red); }
+  .legend-text strong { display: block; font-size: 12.5px; font-weight: 700; }
+  .legend-text span { font-size: 10.5px; color: var(--muted); }
+
+  #singles, #doubles, #mental, #return, #warmup, #scoring, #rules, #court {
+    scroll-margin-top: 64px;
+    display: none;
+  }
+  #singles.active, #doubles.active, #mental.active, #return.active,
+  #warmup.active, #scoring.active, #rules.active, #court.active {
+    display: block;
+  }
+
+  /* ── menu screen cards ── */
+  .menu-card {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 16px;
+    margin-bottom: 10px;
+    cursor: pointer;
+    transition: transform 0.1s;
+  }
+  .menu-card:active { transform: scale(0.98); }
+  .menu-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    background: rgba(255,255,255,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    flex-shrink: 0;
+  }
+  .menu-body { flex: 1; }
+  .menu-title { font-size: 15.5px; font-weight: 800; margin-bottom: 2px; }
+  .menu-sub { font-size: 12px; color: var(--muted); }
+  .menu-chevron { color: var(--muted); font-size: 20px; flex-shrink: 0; }
+
+  /* nav pills for section jump */
+  .jumpnav {
+    display: flex;
+    gap: 8px;
+    overflow-x: auto;
+    padding: 12px 16px 16px;
+    scrollbar-width: none;
+    position: sticky;
+    top: 0;
+    background: var(--bg);
+    z-index: 50;
+    border-bottom: 1px solid var(--border);
+  }
+  .jumpnav::-webkit-scrollbar { display: none; }
+  .jumppill {
+    flex-shrink: 0;
+    padding: 6px 13px;
+    border-radius: 99px;
+    border: 1px solid var(--border);
+    background: var(--card);
+    color: var(--muted);
+    font-size: 11.5px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.15s;
+  }
+  .jumppill:active { background: var(--card-2); color: var(--text); }
+  .jumppill.active { background: var(--blue); color: #fff; border-color: var(--blue); }
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="app-name">Match Log</div>
+  <div class="signout">⏻ Sign out</div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     MENU SCREEN
+════════════════════════════════════════ -->
+<div id="menu-screen">
+  <div class="page-title" style="padding: 20px 20px 18px; font-size: 26px; font-weight: 800; color: var(--text);">Playbook</div>
+
+  <div class="section-block" style="margin-top:0;">
+    <div class="menu-card" onclick="goTo('singles')" style="border-color: rgba(143,209,63,0.25);">
+      <div class="menu-icon">🎾</div>
+      <div class="menu-body">
+        <div class="menu-title" style="color: var(--green);">Singles Playbook</div>
+        <div class="menu-sub">8 strategies · patterns · court zones</div>
+      </div>
+      <span class="menu-chevron">›</span>
+    </div>
+
+    <div class="menu-card" onclick="goTo('doubles')" style="border-color: rgba(91,155,245,0.25);">
+      <div class="menu-icon">👥</div>
+      <div class="menu-body">
+        <div class="menu-title" style="color: var(--blue);">Doubles Playbook</div>
+        <div class="menu-sub">Roles · formations · communication</div>
+      </div>
+      <span class="menu-chevron">›</span>
+    </div>
+
+    <div class="menu-card" onclick="goTo('mental')" style="border-color: rgba(245,197,66,0.25);">
+      <div class="menu-icon">🧠</div>
+      <div class="menu-body">
+        <div class="menu-title" style="color: var(--yellow);">Mental Toughness</div>
+        <div class="menu-sub">Routines · focus · momentum</div>
+      </div>
+      <span class="menu-chevron">›</span>
+    </div>
+
+    <div class="menu-card" onclick="goTo('return')" style="border-color: rgba(91,155,245,0.25);">
+      <div class="menu-icon">↩️</div>
+      <div class="menu-body">
+        <div class="menu-title" style="color: var(--blue);">Return Game</div>
+        <div class="menu-sub">Positioning · patterns · reading serves</div>
+      </div>
+      <span class="menu-chevron">›</span>
+    </div>
+
+    <div class="menu-card" onclick="goTo('warmup')" style="border-color: rgba(240,149,74,0.25);">
+      <div class="menu-icon">🔥</div>
+      <div class="menu-body">
+        <div class="menu-title" style="color: var(--orange);">Warm-Up Routine</div>
+        <div class="menu-sub">10-min protocol · dynamic prep · mental checklist</div>
+      </div>
+      <span class="menu-chevron">›</span>
+    </div>
+
+    <div class="menu-card" onclick="goTo('scoring')" style="border-color: rgba(239,90,90,0.25);">
+      <div class="menu-icon">📊</div>
+      <div class="menu-body">
+        <div class="menu-title" style="color: var(--red);">Match Scoring</div>
+        <div class="menu-sub">Ad scoring · tiebreaks · pro-set</div>
+      </div>
+      <span class="menu-chevron">›</span>
+    </div>
+
+    <div class="menu-card" onclick="goTo('rules')" style="border-color: rgba(255,255,255,0.15);">
+      <div class="menu-icon">📋</div>
+      <div class="menu-body">
+        <div class="menu-title">Rules & The Code</div>
+        <div class="menu-sub">Line calls · serving · hindrance</div>
+      </div>
+      <span class="menu-chevron">›</span>
+    </div>
+
+    <div class="menu-card" onclick="goTo('court')" style="border-color: rgba(143,209,63,0.25);">
+      <div class="menu-icon">🟩</div>
+      <div class="menu-body">
+        <div class="menu-title" style="color: var(--green);">Court Reference</div>
+        <div class="menu-sub">Zones · Deuce/Ad · net heights · dimensions</div>
+      </div>
+      <span class="menu-chevron">›</span>
+    </div>
+  </div>
+
+  <div class="bottomnav">
+    <div class="navitem active"><span class="navicon">⊞</span>Home</div>
+    <div class="navitem"><span class="navicon">👥</span>Players</div>
+    <div class="navitem"><span class="navicon">📖</span>Playbook</div>
+  </div>
+</div>
+
+<!-- ═══════════════════════════════════════
+     DETAIL PAGES (hidden until opened)
+════════════════════════════════════════ -->
+<div id="pages-wrap" style="display:none;">
+
+<div class="backrow" onclick="goHome()" style="cursor:pointer;">‹ Playbook</div>
+
+<!-- ═══════════════════════════════════════
+     SINGLES — fully matched to screenshot
+════════════════════════════════════════ -->
+<div id="singles">
+
+  <div class="section-block" style="margin-top:4px;">
+    <h2 style="font-size:22px; font-weight:800;">Singles</h2>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Win % by Position</div>
+    <div class="stat-row">
+      <div class="stat-card">
+        <div class="stat-pct" style="color:var(--green)">46%</div>
+        <div class="stat-label">Baseline</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-pct" style="color:var(--yellow)">66%</div>
+        <div class="stat-label">Approaching</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-pct" style="color:var(--green)">69%</div>
+        <div class="stat-label">Serve & Volley</div>
+      </div>
+    </div>
+    <div class="insight-box">
+      Approaching with a heavy forehand to the backhand raises win % to <b>71%</b>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Shots per Point</div>
+
+    <div class="shot-row">
+      <div class="shot-top">
+        <div><span class="shot-name">1–4 shots</span><span class="shot-sub">First Strike</span></div>
+        <div class="shot-pct">70%</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:70%; background:var(--green);"></div></div>
+    </div>
+
+    <div class="shot-row">
+      <div class="shot-top">
+        <div><span class="shot-name">5–8 shots</span><span class="shot-sub">Pattern Play</span></div>
+        <div class="shot-pct">20%</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:20%; background:var(--yellow);"></div></div>
+    </div>
+
+    <div class="shot-row">
+      <div class="shot-top">
+        <div><span class="shot-name">9+ shots</span><span class="shot-sub">Extended Rally</span></div>
+        <div class="shot-pct">10%</div>
+      </div>
+      <div class="bar-track"><div class="bar-fill" style="width:10%; background:var(--blue);"></div></div>
+    </div>
+
+    <div class="shot-caption">Spend the most time on serve, return, serve+1, and return+1.</div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">8 Strategies</div>
+    <div class="strat-hint">Tap any strategy to expand</div>
+
+    <div class="strat-item" onclick="toggleStrat(this)">
+      <div class="strat-num">1</div>
+      <div class="strat-name">Out-Rally the Opponent</div>
+      <div class="strat-chevron">›</div>
+    </div>
+    <div class="strat-detail">Build points with consistent, high-margin cross-court shots. Make them hit one more ball than they want to. Patience wins more points than power at every level below the pros.</div>
+
+    <div class="strat-item" onclick="toggleStrat(this)">
+      <div class="strat-num">2</div>
+      <div class="strat-name">Play Aggressively</div>
+      <div class="strat-chevron">›</div>
+    </div>
+    <div class="strat-detail">Take time away from your opponent. Step inside the baseline on short balls, take the ball on the rise, and dictate rather than react.</div>
+
+    <div class="strat-item" onclick="toggleStrat(this)">
+      <div class="strat-num">3</div>
+      <div class="strat-name">Play Your Strengths</div>
+      <div class="strat-chevron">›</div>
+    </div>
+    <div class="strat-detail">Run around your backhand to hit forehands when you can. Construct points that funnel the ball toward your best shot, especially on important points.</div>
+
+    <div class="strat-item" onclick="toggleStrat(this)">
+      <div class="strat-num">4</div>
+      <div class="strat-name">Attack the Opponent's Weakness</div>
+      <div class="strat-chevron">›</div>
+    </div>
+    <div class="strat-detail">Identify their weaker wing early in the warm-up and target it relentlessly, especially on big points. Don't get cute — repetition breaks people down.</div>
+
+    <div class="strat-item" onclick="toggleStrat(this)">
+      <div class="strat-num">5</div>
+      <div class="strat-name">Attack the Net</div>
+      <div class="strat-chevron">›</div>
+    </div>
+    <div class="strat-detail">Look for short balls and approach with depth and margin. Split-step on their reply, then finish with a high-percentage volley into open space.</div>
+
+    <div class="strat-item" onclick="toggleStrat(this)">
+      <div class="strat-num">6</div>
+      <div class="strat-name">Bring the Opponent to the Net</div>
+      <div class="strat-chevron">›</div>
+    </div>
+    <div class="strat-detail">Use drop shots and short slices to pull baseline-only players forward into unfamiliar territory. Follow with a passing shot or lob.</div>
+
+    <div class="strat-item" onclick="toggleStrat(this)">
+      <div class="strat-num">7</div>
+      <div class="strat-name">Use Variety to Create Errors</div>
+      <div class="strat-chevron">›</div>
+    </div>
+    <div class="strat-detail">Mix spins, heights, and pace. A slice after three topspin balls in a row disrupts timing more than any single "big" shot.</div>
+
+    <div class="strat-item" onclick="toggleStrat(this)">
+      <div class="strat-num">8</div>
+      <div class="strat-name">Open the Court</div>
+      <div class="strat-chevron">›</div>
+    </div>
+    <div class="strat-detail">Move your opponent side to side with sharp angles before going for the winner into the space you created. Set up the shot two balls ahead.</div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Court Zones</div>
+
+    <div class="zone-card kill">
+      <div class="zone-top"><span class="zone-name">Kill Zone</span><span class="zone-loc">Around the service line</span></div>
+      <div class="zone-desc">Finish the point. All attacking-zone rules apply. Look to volley or put away.</div>
+    </div>
+
+    <div class="zone-card attack">
+      <div class="zone-top"><span class="zone-name">Attack Zone</span><span class="zone-loc">Inside the baseline</span></div>
+      <div class="zone-desc">Court has shortened — keep the ball within 3 ft over the net. Don't let it sail long.</div>
+    </div>
+
+    <div class="zone-card neutral">
+      <div class="zone-top"><span class="zone-name">Neutral Zone</span><span class="zone-loc">Behind baseline, comfortable</span></div>
+      <div class="zone-desc">Focus on depth. Hit 3–6 ft over the net with topspin to push opponent back.</div>
+    </div>
+
+    <div class="zone-card defend">
+      <div class="zone-top"><span class="zone-name">Defend Zone</span><span class="zone-loc">6+ feet behind the baseline</span></div>
+      <div class="zone-desc">Hit at least 6 ft over the net. Prioritize consistency, depth, and recovery time.</div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Patterns of Play</div>
+
+    <div class="pattern-card">
+      <div class="pattern-head"><span class="pattern-icon">🎾</span><span class="pattern-title">The 2-1</span></div>
+      <div class="pattern-step"><span class="step-tag">SHOT 1</span><span class="step-desc">Deep to C+ — push opponent behind the baseline.</span></div>
+      <div class="pattern-step"><span class="step-tag">SHOT 2</span><span class="step-desc">Wide to D — pull them off the court, opening the far side.</span></div>
+      <div class="pattern-step"><span class="step-tag">SHOT 3</span><span class="step-desc">To A — the unspectacular winner into the open court.</span></div>
+      <div class="pattern-note">This is your default point-building pattern.</div>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-head"><span class="pattern-icon">🛡️</span><span class="pattern-title">The Backhand Cage</span></div>
+      <div class="pattern-step"><span class="step-tag">STEP 1</span><span class="step-desc">Use your forehand (sword) to attack their backhand (shield).</span></div>
+      <div class="pattern-step"><span class="step-tag">STEP 2</span><span class="step-desc">Make them hit 4 backhands in a row — no relief.</span></div>
+      <div class="pattern-step"><span class="step-tag">STEP 3</span><span class="step-desc">Wait for the short ball and put it away.</span></div>
+      <div class="pattern-note blue">Counter: if opponent uses this on you, hit backhand down the line without giving up position.</div>
+    </div>
+
+    <div class="pattern-card">
+      <div class="pattern-head"><span class="pattern-icon">⚡</span><span class="pattern-title">Serve + 1 Forehand</span></div>
+      <div class="pattern-step"><span class="step-tag">SERVE</span><span class="step-desc">Out wide or into the body to create an angle.</span></div>
+      <div class="pattern-step"><span class="step-tag">+1</span><span class="step-desc">Run around the reply and hit a forehand — forehands win 2× more than backhands.</span></div>
+      <div class="pattern-step"><span class="step-tag">TIP</span><span class="step-desc">Attack the Deuce or Ad side twice in a row — removes opponent's anticipation.</span></div>
+      <div class="pattern-note">70% of all points end in 1–4 shots. Win here, win the match.</div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Serve</div>
+
+    <div class="subhead">Patterns</div>
+    <div class="sr-row">
+      <span class="sr-tag">1ST</span>
+      <div class="sr-body"><span>Out wide to zones 1 & 8 — maximizes return angle for your partner/next shot.</span></div>
+    </div>
+    <div class="sr-row">
+      <span class="sr-tag">2ND</span>
+      <div class="sr-body"><span>Body-backhand jammer (zones 3 & 7) or into the backhand — limit the returner's options.</span></div>
+    </div>
+
+    <div class="subhead">Goals</div>
+    <div class="goal-row"><span class="goal-label">1st Serve In</span><span class="goal-val">60%</span></div>
+    <div class="goal-row"><span class="goal-label">1st Serve Points Won</span><span class="goal-val">70%</span></div>
+    <div class="goal-row"><span class="goal-label">2nd Serve Points Won</span><span class="goal-val">50%</span></div>
+    <div class="goal-row"><span class="goal-label">Break Points Saved</span><span class="goal-val">60%</span></div>
+    <div class="goal-row"><span class="goal-label">Service Games Won</span><span class="goal-val">80%</span></div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Return</div>
+
+    <div class="sr-row">
+      <span class="sr-tag">1ST</span>
+      <div class="sr-body"><strong>Defensive</strong><span>Return deep down the middle — neutralize the serve and start the point.</span></div>
+    </div>
+    <div class="sr-row">
+      <span class="sr-tag">2ND</span>
+      <div class="sr-body"><strong>Offensive</strong><span>Step up and take the ball early. Run around it and hit a forehand. Big shots go to big targets.</span></div>
+    </div>
+    <div class="shot-caption" style="margin-top:2px;">70% (men) / 75% (women) of returns come back in play.</div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Passing Shots</div>
+    <div class="pass-row"><span class="pass-label">Primary</span><span class="pass-val primary">Crosscourt roll</span></div>
+    <div class="pass-row"><span class="pass-label">Secondary</span><span class="pass-val">Down the line</span></div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Keys for Success</div>
+
+    <div class="key-row">
+      <span class="key-icon">🎯</span>
+      <span class="key-text">The best players in the world win 55% of 1+1 points. Be ready to lose 45%.</span>
+    </div>
+    <div class="key-row">
+      <span class="key-icon">❌</span>
+      <span class="key-text">80% of points end in errors. Make your opponent uncomfortable.</span>
+    </div>
+    <div class="key-row">
+      <span class="key-icon">💪</span>
+      <span class="key-text">Forehands produce 2× more winners than backhands. Run around the backhand.</span>
+    </div>
+    <div class="key-row">
+      <span class="key-icon">📍</span>
+      <span class="key-text">C+ is where most players stand — use this to plan your patterns.</span>
+    </div>
+    <div class="key-row">
+      <span class="key-icon">📈</span>
+      <span class="key-text">Spend 80% of time developing strengths, 20% minimizing weaknesses.</span>
+    </div>
+    <div class="key-row">
+      <span class="key-icon">🎾</span>
+      <span class="key-text">Play more than you practice. Match experience builds court instincts.</span>
+    </div>
+  </div>
+
+</div>
+
+<div class="hr"></div>
+
+<!-- ═══════════════════════════════════════
+     PLACEHOLDER SECTIONS — send screenshots to fill these in
+════════════════════════════════════════ -->
+<div id="doubles">
+  <div class="hero-card blue">
+    <div class="hero-eyebrow">Doubles</div>
+    <div class="hero-title">Both Up</div>
+    <div class="hero-desc">The team that wins the net wins the match. AI strategy flows from this principle.</div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">5 Fundamentals</div>
+    <div class="strat-hint">Tap to expand</div>
+
+    <div class="principle-card">
+      <div class="principle-head" onclick="togglePrinciple(this)">
+        <div class="principle-num">1</div>
+        <div class="principle-title">Win the Net</div>
+        <div class="principle-chevron">⌄</div>
+      </div>
+      <div class="principle-body">
+        The team that controls the net wins. Make it your constant goal on both partners' halves.
+        <ul>
+          <li>Both players at net win far more points than either baseline pairing</li>
+          <li>Every wide + volley + approach opportunity is worth taking</li>
+          <li>Force your opponents back with pace and depth, then move in together</li>
+          <li>Net control shifts momentum — defend it aggressively</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="principle-card">
+      <div class="principle-head" onclick="togglePrinciple(this)">
+        <div class="principle-num">2</div>
+        <div class="principle-title">Keep the Ball Low</div>
+        <div class="principle-chevron">⌄</div>
+      </div>
+      <div class="principle-body">
+        Low balls force opponents to volley up, giving you the opportunity to put it away.
+        <ul>
+          <li>Aim below the top of the net on cross-court returns and passing attempts</li>
+          <li>Topspin dips the ball quickly — ideal for keeping opponents from attacking</li>
+          <li>A dip dropping ball into the net player's feet neutralizes any formation</li>
+          <li>The team forced to volley up is losing the exchange</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="principle-card">
+      <div class="principle-head" onclick="togglePrinciple(this)">
+        <div class="principle-num">3</div>
+        <div class="principle-title">Communicate Constantly</div>
+        <div class="principle-chevron">⌄</div>
+      </div>
+      <div class="principle-body">
+        Talk before every point, between points, and during points.
+        <ul>
+          <li>Call "mine" or "yours" on every ball that could go either way</li>
+          <li>Signal poaching intentions before the serve with a hand behind the back</li>
+          <li>Compliment every good shot from your partner — keep energy high</li>
+          <li>Discuss what's working between games. Short, focused adjustments.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="principle-card">
+      <div class="principle-head" onclick="togglePrinciple(this)">
+        <div class="principle-num">4</div>
+        <div class="principle-title">Cover the Middle</div>
+        <div class="principle-chevron">⌄</div>
+      </div>
+      <div class="principle-body">
+        Most doubles errors come from balls hit through the middle.
+        <ul>
+          <li>Default rule: forehand player takes the middle when both are at net</li>
+          <li>When both are back, the player with the lost court covers the middle</li>
+          <li>When both are at net, the player closest to the center takes the middle</li>
+          <li>Never give up the "I" — call it or default to forehand</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="principle-card">
+      <div class="principle-head" onclick="togglePrinciple(this)">
+        <div class="principle-num">5</div>
+        <div class="principle-title">Pick On the Weaker Player</div>
+        <div class="principle-chevron">⌄</div>
+      </div>
+      <div class="principle-body">
+        Find the vulnerability in the opposing team and exploit it relentlessly.
+        <ul>
+          <li>Target the weaker volleyer or the player who mis-hits under pressure</li>
+          <li>Hit at the body of the net player most likely to miss or pop it up</li>
+          <li>Identify who struggles mentally and press their opponent consistently</li>
+          <li>Don't switch targets mid-plan unless the current approach isn't working</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">4 Roles on Court</div>
+    <div class="strat-hint">Know your job on every point</div>
+
+    <div class="role-card a">
+      <div class="role-title">Server</div>
+      <ul>
+        <li>Serve wide or into the body — create an angle for the net player</li>
+        <li>Follow your serve to the net when first serve lands in</li>
+        <li>On second serve, move in slightly to cut off the angle</li>
+        <li>Communicate with partner: signal where you're serving before each point</li>
+        <li>After serving, split step as anything volleys — react instantly</li>
+      </ul>
+    </div>
+
+    <div class="role-card b">
+      <div class="role-title">Server's Partner</div>
+      <ul>
+        <li>Start in the box position — you own the front of the court</li>
+        <li>Poach aggressively on predictable cross-court returns</li>
+        <li>Signal your intention to poach before the serve with a hand signal</li>
+        <li>If not poaching, watch toward the middle to take anything that floats</li>
+        <li>After a quality volley, move toward the net automatically</li>
+      </ul>
+    </div>
+
+    <div class="role-card c">
+      <div class="role-title">Returner</div>
+      <ul>
+        <li>Default return: low and cross-court, away from the net player</li>
+        <li>Attack the second serve — step in, take it early, go for a winner</li>
+        <li>Lob the net player when they're poaching or standing too close</li>
+        <li>Hit at the net player's feet if the opportunity is there</li>
+        <li>After a quality return, move in to take the net position</li>
+      </ul>
+    </div>
+
+    <div class="role-card d">
+      <div class="role-title">Returner's Partner</div>
+      <ul>
+        <li>Start at the service line — not too forward, not at the baseline</li>
+        <li>Watch the net player. If they poach, move to the net and take over</li>
+        <li>Move back if the return is weak and you expect a put-away</li>
+        <li>If partner hits a great return, move in together to take the net</li>
+        <li>Call "back" or "up" to coordinate your movements clearly</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">3 Formations</div>
+
+    <div class="formation-card">
+      <div class="formation-head">
+        <span class="formation-name">Both Up</span>
+        <span class="formation-badge aggressive">Aggressive</span>
+      </div>
+      <div class="pc-cols">
+        <div class="pc-col">
+          <div class="pc-col-label pro">Pros</div>
+          <ul><li>Best net control</li><li>Puts maximum pressure on opponents</li><li>Forces low-percentage passing shots</li></ul>
+        </div>
+        <div class="pc-col">
+          <div class="pc-col-label con">Cons</div>
+          <ul><li>Vulnerable to lobs</li><li>Requires excellent volleys</li><li>Communication is critical</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="formation-card">
+      <div class="formation-head">
+        <span class="formation-name">Both Back</span>
+        <span class="formation-badge defensive">Defensive</span>
+      </div>
+      <div class="pc-cols">
+        <div class="pc-col">
+          <div class="pc-col-label pro">Pros</div>
+          <ul><li>More time to react to hard shots</li><li>Better lob coverage</li></ul>
+        </div>
+        <div class="pc-col">
+          <div class="pc-col-label con">Cons</div>
+          <ul><li>Surrenders net control</li><li>Gives opponents easy angles</li><li>Use as a reset, not a strategy</li></ul>
+        </div>
+      </div>
+    </div>
+
+    <div class="formation-card">
+      <div class="formation-head">
+        <span class="formation-name">Up & Back (I-Formation)</span>
+        <span class="formation-badge standard">Standard</span>
+      </div>
+      <div class="pc-cols">
+        <div class="pc-col">
+          <div class="pc-col-label pro">Pros</div>
+          <ul><li>Good coverage of lobs and passing shots</li><li>Natural starting point for most teams</li></ul>
+        </div>
+        <div class="pc-col">
+          <div class="pc-col-label con">Cons</div>
+          <ul><li>Middle gap is exploitable</li><li>Net player must transition to Both Up as quickly as possible</li></ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Net Play</div>
+    <div class="info-card">
+      <span class="info-icon">👁️</span>
+      <div class="info-body"><strong>Eyework</strong><span>Watch your opponent's racket face to read direction. Keep your eyes up, not on the ball too long. Track the ball all the way to your strings on every volley. After hitting, immediately refocus on your opponent's next move.</span></div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">🦶</span>
+      <div class="info-body"><strong>Footwork</strong><span>Split step as your opponent contacts the ball every time. Move toward the ball at a 45 degree angle for every volley. Keep your weight moving forward on every volley. When lobbed, one player calls it and moves together.</span></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Good Partner Traits</div>
+    <div class="key-row"><span class="key-icon">🗣️</span><span class="key-text"><strong style="display:block; margin-bottom:2px;">Communicates clearly</strong>Calls every shot, signals before poaching, gives feedback between points.</span></div>
+    <div class="key-row"><span class="key-icon">🤝</span><span class="key-text"><strong style="display:block; margin-bottom:2px;">Moves together</strong>Advancing and retreating as a unit, not independently.</span></div>
+    <div class="key-row"><span class="key-icon">💪</span><span class="key-text"><strong style="display:block; margin-bottom:2px;">Stays positive</strong>Never blames a partner for a missed shot or bad call.</span></div>
+    <div class="key-row"><span class="key-icon">🙋</span><span class="key-text"><strong style="display:block; margin-bottom:2px;">Takes ownership</strong>Adjusts the plan before the next point, without waiting to be told.</span></div>
+    <div class="key-row"><span class="key-icon">🔁</span><span class="key-text"><strong style="display:block; margin-bottom:2px;">Adapts</strong>Changes formation or plan mid-match if something isn't working.</span></div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Common Themes</div>
+    <div class="key-row"><span class="key-icon">🏆</span><span class="key-text">The team that wins the net wins the match. Make this your priority every point.</span></div>
+    <div class="key-row"><span class="key-icon">🗣️</span><span class="key-text">Talk on every ball that could go either way — the middle causes most errors.</span></div>
+    <div class="key-row"><span class="key-icon">⬇️</span><span class="key-text">Target the weaker net player consistently. Don't switch plans plans mid-match.</span></div>
+    <div class="key-row"><span class="key-icon">↩️</span><span class="key-text">Return cross-court by default. Never give the net player an easy put-away.</span></div>
+    <div class="key-row"><span class="key-icon">⬆️</span><span class="key-text">Hit at the feet of the net player when transitioning. It neutralizes the point.</span></div>
+    <div class="key-row"><span class="key-icon">🎯</span><span class="key-text">Trust each other. One bad shot doesn't change the game plan.</span></div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Pre-Match Partner Questions</div>
+    <div class="strat-hint">Ask your partner before you walk on</div>
+    <ul class="tip-list" style="gap:10px;">
+      <li><span class="dot"></span><span>Who do you like to serve or receive first, and which side?</span></li>
+      <li><span class="dot"></span><span>Do you prefer to poach or stay home by default?</span></li>
+      <li><span class="dot"></span><span>How should we handle lobs — who calls it, who switches?</span></li>
+      <li><span class="dot"></span><span>What's your strongest shot? I'll try to feed you into it.</span></li>
+      <li><span class="dot"></span><span>How do you like to communicate mid-point? Any signals?</span></li>
+    </ul>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">In-Match Check-In</div>
+    <div class="strat-hint">Ask each other on changeovers</div>
+    <ul class="tip-list" style="gap:10px;">
+      <li><span class="dot"></span><span>What's working for their team right now?</span></li>
+      <li><span class="dot"></span><span>Which opponent is more vulnerable?</span></li>
+      <li><span class="dot"></span><span>Are we getting to the net enough?</span></li>
+      <li><span class="dot"></span><span>What adjustment can we make right now?</span></li>
+    </ul>
+  </div>
+</div>
+
+<div id="mental">
+  <div class="section-block" style="margin-top:4px;">
+    <h2 style="font-size:22px; font-weight:800; margin-bottom:6px;">The Mental Game</h2>
+    <p style="font-size:13.5px; color:var(--muted-2); line-height:1.5; margin-bottom:0;">Technical skill gets you on court. Mental skill wins matches.</p>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">4 Mental Pillars</div>
+    <div class="strat-hint">The same metrics tracked in your match reflections</div>
+
+    <div class="principle-card">
+      <div class="principle-head" onclick="togglePrinciple(this)">
+        <div class="principle-num" style="background:rgba(239,90,90,0.15); color:var(--red);">🎯</div>
+        <div class="principle-title">Tilt Control</div>
+        <div class="principle-chevron">⌄</div>
+      </div>
+      <div class="principle-body">
+        Tilt is anger or frustration leaking into your game. It's the #1 performance killer.
+        <ul>
+          <li>Recognize your tilt triggers: bad calls, double faults, easy errors.</li>
+          <li>Tilt compounds — one bad reaction leads to the next. Break the chain early.</li>
+          <li>Never react to a missed shot for more than 3 seconds. Then reset.</li>
+          <li>Use the walk between points to physically shake it off.</li>
+          <li>High-tilt players win far fewer games after momentum swings — track yours.</li>
+        </ul>
+        <div class="note-box" style="margin-top:10px;"><strong>Reset Cue</strong>After a bad point: exhale, look down at strings, walk to the baseline. Reset.</div>
+      </div>
+    </div>
+
+    <div class="principle-card">
+      <div class="principle-head" onclick="togglePrinciple(this)">
+        <div class="principle-num" style="background:rgba(91,155,245,0.15); color:var(--blue);">👁️</div>
+        <div class="principle-title">Focus</div>
+        <div class="principle-chevron">⌄</div>
+      </div>
+      <div class="principle-body">
+        Focus is staying in the present point — not the last one, not the score.
+        <ul>
+          <li>The only thing you can control is the next ball. Play it.</li>
+          <li>Have a pre-point ritual: bounce the ball, take a breath, pick a target.</li>
+          <li>When your mind drifts to the score, refocus on your feet or breathing.</li>
+          <li>Distracted play = reactive play. Focused play = intentional play.</li>
+          <li>If you're thinking about winning, you've already lost the point.</li>
+        </ul>
+        <div class="note-box" style="margin-top:10px;"><strong>Reset Cue</strong>Before each point: pick a target, commit to a pattern, then serve or return.</div>
+      </div>
+    </div>
+
+    <div class="principle-card">
+      <div class="principle-head" onclick="togglePrinciple(this)">
+        <div class="principle-num" style="background:rgba(245,197,66,0.15); color:var(--yellow);">🔋</div>
+        <div class="principle-title">Energy</div>
+        <div class="principle-chevron">⌄</div>
+      </div>
+      <div class="principle-body">
+        Energy management determines whether you can sustain quality in the third set.
+        <ul>
+          <li>Move between every point — standing still drains energy faster than moving.</li>
+          <li>Use changeovers to eat, hydrate, and breathe. Not to worry.</li>
+          <li>High-energy body language raises your actual performance level.</li>
+          <li>When energy drops, shorten your swing — tighter, more controlled strokes.</li>
+          <li>Fist pumps and positive calls after won points boost energy for both players.</li>
+        </ul>
+        <div class="note-box" style="margin-top:10px;"><strong>Reset Cue</strong>On changeovers: sit, close your eyes for 30 seconds, breathe slowly. Arrive ready.</div>
+      </div>
+    </div>
+
+    <div class="principle-card">
+      <div class="principle-head" onclick="togglePrinciple(this)">
+        <div class="principle-num" style="background:rgba(143,209,63,0.15); color:var(--green);">🔥</div>
+        <div class="principle-title">Confidence</div>
+        <div class="principle-chevron">⌄</div>
+      </div>
+      <div class="principle-body">
+        Confidence is built in practice and protected in matches. It's fragile — protect it.
+        <ul>
+          <li>Play to your strengths first. Winning with your best shot builds confidence fast.</li>
+          <li>Never change a winning strategy. Trust what's working.</li>
+          <li>After an error, remind yourself of the shot you'll hit next — not the one you missed.</li>
+          <li>Walk tall, move between points with purpose. Fake it until it's real.</li>
+          <li>Confidence comes from preparation. Know your game plan before you walk on court.</li>
+        </ul>
+        <div class="note-box" style="margin-top:10px;"><strong>Reset Cue</strong>When confidence wavers: go back to your most reliable shot and build from there.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Between-Point Routine</div>
+    <div class="strat-hint">Do this after every single point — win or lose</div>
+
+    <div class="num-card">
+      <div class="num-head"><span class="num-badge">1</span><span class="num-title">React</span></div>
+      <div class="num-desc" style="margin-bottom:0;">Allow yourself one brief reaction — positive or neutral. Never dwell.</div>
+    </div>
+    <div class="num-card">
+      <div class="num-head"><span class="num-badge">2</span><span class="num-title">Release</span></div>
+      <div class="num-desc" style="margin-bottom:0;">Turn away from the net. Exhale. Look at your strings or walk calmly.</div>
+    </div>
+    <div class="num-card">
+      <div class="num-head"><span class="num-badge">3</span><span class="num-title">Reset</span></div>
+      <div class="num-desc" style="margin-bottom:0;">Bounce the ball, pick your serve target, commit to a pattern.</div>
+    </div>
+    <div class="num-card">
+      <div class="num-head"><span class="num-badge">4</span><span class="num-title">Ready</span></div>
+      <div class="num-desc" style="margin-bottom:0;">Split step before the serve. Eyes locked. Trust the plan.</div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Momentum Management</div>
+    <div class="mini-highlight" style="background:rgba(143,209,63,0.06); border-color:rgba(143,209,63,0.2);">
+      <div class="mh-title" style="color:var(--green);">You're On a Roll</div>
+      <div class="mh-body">Shorten between-point time. Serve quickly. Don't let your opponent reset.</div>
+    </div>
+    <div class="mini-highlight" style="background:rgba(239,90,90,0.06); border-color:rgba(239,90,90,0.2);">
+      <div class="mh-title" style="color:var(--red);">Opponent Is On a Roll</div>
+      <div class="mh-body">Slow everything down. Bounce the ball more. Take a full breath. Break their rhythm.</div>
+    </div>
+    <div class="mini-highlight">
+      <div class="mh-title">Big Point (Break Point, Set Point)</div>
+      <div class="mh-body">Go to your highest-percentage shot. This is not the time to try something new.</div>
+    </div>
+    <div class="mini-highlight" style="background:rgba(91,155,245,0.06); border-color:rgba(91,155,245,0.2);">
+      <div class="mh-title" style="color:var(--blue);">After a Double Fault</div>
+      <div class="mh-body">Reset completely before the next point. One serve at a time. Pick a target, not a result.</div>
+    </div>
+    <div class="mini-highlight" style="background:rgba(255,255,255,0.04); border-color:rgba(255,255,255,0.15);">
+      <div class="mh-title" style="color:var(--muted-2);">Down a Set</div>
+      <div class="mh-body">Wipe the slate. The second set is a new match. Go back to what's working.</div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Self-Talk Protocol</div>
+    <div class="strat-hint">Replace negative self-talk in real time</div>
+
+    <div class="info-card" style="flex-direction:column; gap:6px;">
+      <span style="font-size:13px; color:var(--red);">"Don't miss this"</span>
+      <span style="font-size:13.5px; font-weight:700;">→ Hit to the backhand corner</span>
+    </div>
+    <div class="info-card" style="flex-direction:column; gap:6px;">
+      <span style="font-size:13px; color:var(--red);">"I'm going to double fault"</span>
+      <span style="font-size:13.5px; font-weight:700;">→ Spin it in to the body</span>
+    </div>
+    <div class="info-card" style="flex-direction:column; gap:6px;">
+      <span style="font-size:13px; color:var(--red);">"I always choke on this point"</span>
+      <span style="font-size:13.5px; font-weight:700;">→ Play the ball, not the score</span>
+    </div>
+    <div class="info-card" style="flex-direction:column; gap:6px;">
+      <span style="font-size:13px; color:var(--red);">"I can't beat this guy"</span>
+      <span style="font-size:13.5px; font-weight:700;">→ Focus on the next ball</span>
+    </div>
+    <div class="info-card" style="flex-direction:column; gap:6px;">
+      <span style="font-size:13px; color:var(--red);">"I'm so bad at this"</span>
+      <span style="font-size:13.5px; font-weight:700;">→ I'm going to hit 3 in a row</span>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Body Language</div>
+    <div class="strat-hint">Your body broadcasts your mental state — to yourself and your opponent</div>
+
+    <div class="info-card"><span class="info-icon">🚶</span><div class="info-body"><strong>Walk tall</strong><span>Head up, shoulders back between every point — regardless of the score.</span></div></div>
+    <div class="info-card"><span class="info-icon">✊</span><div class="info-body"><strong>Pump your fist</strong><span>After big points won. Controlled celebration builds momentum.</span></div></div>
+    <div class="info-card"><span class="info-icon">🐢</span><div class="info-body"><strong>Slow your walk</strong><span>When you want to slow the game down, walk slowly and deliberately.</span></div></div>
+    <div class="info-card"><span class="info-icon">🚫</span><div class="info-body"><strong>Never drop your head</strong><span>Slumped shoulders broadcast weakness to your opponent.</span></div></div>
+    <div class="info-card"><span class="info-icon">🧍</span><div class="info-body"><strong>Stay still at baseline</strong><span>Stillness before the serve signals control and focus.</span></div></div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Pre-Match Prep</div>
+    <ul class="tip-list" style="gap:12px;">
+      <li><span class="dot"></span><span>Arrive with a game plan. Know your first-strike patterns before you start.</span></li>
+      <li><span class="dot"></span><span>Warm up at match pace — not 50%. Your body needs to be ready from point one.</span></li>
+      <li><span class="dot"></span><span>Set a process goal (e.g. "first strike on every 2nd serve") not just "win".</span></li>
+      <li><span class="dot"></span><span>Use the walk-on time to breathe and get focused. Not to worry about the opponent.</span></li>
+      <li><span class="dot"></span><span>Sleep and nutrition matter more than last-minute drilling. Arrive rested.</span></li>
+    </ul>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Common Mental Mistakes</div>
+    <div class="key-row"><span class="key-icon">⚠️</span><span class="key-text"><strong style="display:block; margin-bottom:2px;">Changing a winning game plan</strong>If it's working, keep doing it. The temptation to be clever costs more matches than anything.</span></div>
+    <div class="key-row"><span class="key-icon">⚠️</span><span class="key-text"><strong style="display:block; margin-bottom:2px;">Going for too much on big points</strong>Big points call for your best shot, not your riskiest. Consistency wins under pressure.</span></div>
+    <div class="key-row"><span class="key-icon">⚠️</span><span class="key-text"><strong style="display:block; margin-bottom:2px;">Thinking about the score instead of the ball</strong>The score is information. The ball is the job. Focus on the ball.</span></div>
+    <div class="key-row"><span class="key-icon">⚠️</span><span class="key-text"><strong style="display:block; margin-bottom:2px;">Reacting visibly to bad calls or errors</strong>Your reaction is your opponent's best weapon. Give them nothing.</span></div>
+    <div class="key-row"><span class="key-icon">⚠️</span><span class="key-text"><strong style="display:block; margin-bottom:2px;">Playing not to lose instead of playing to win</strong>Defensive tennis feels safe but produces errors. Commit to every shot.</span></div>
+  </div>
+</div>
+
+<div id="return">
+  <div class="hero-card blue">
+    <div class="hero-eyebrow">Return Game</div>
+    <div class="hero-title">Win the Return</div>
+    <div class="hero-desc">The return is the second most important shot in tennis. A solid return game shifts pressure back to the server immediately.</div>
+    <div class="hero-stats">
+      <div class="hero-stat"><div class="hs-label">Key Stat</div><div class="hs-val blue">50%+</div><div class="hs-label" style="margin-top:2px;">of points start on return</div></div>
+      <div class="hero-stat"><div class="hs-label">Goal</div><div class="hs-val blue">In Play</div><div class="hs-label" style="margin-top:2px;">on 1st serve return</div></div>
+      <div class="hero-stat"><div class="hs-label">Mindset</div><div class="hs-val blue">Neutralize</div><div class="hs-label" style="margin-top:2px;">then take control</div></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Reading the Serve</div>
+    <div class="info-card">
+      <span class="info-icon">💬</span>
+      <div class="info-body"><strong>Toss position</strong><span>Toss over right shoulder = wide to deuce side / down-T to ad side.</span></div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">🦶</span>
+      <div class="info-body"><strong>Foot position</strong><span>Server stepping in → net rusher coming. Prepare a low return.</span></div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">🎾</span>
+      <div class="info-body"><strong>Ball toss height</strong><span>Low toss = kick or slice. High toss = flat bomb. Adjust stance early.</span></div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">🔄</span>
+      <div class="info-body"><strong>Shoulder turn</strong><span>Early shoulder rotation = fast flat serve. Late = spin or placement.</span></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Return Positioning</div>
+    <div class="info-card">
+      <span class="info-icon">💨</span>
+      <div class="info-body"><strong>Flat / Big Serve</strong><span>Stand 1–2 feet behind baseline. Give yourself reaction time. Compact backswing, redirect pace.</span></div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">🌀</span>
+      <div class="info-body"><strong>Slice / Kick Serve</strong><span>Move inside the baseline after the toss. Attack the ball before it climbs too high. Step in.</span></div>
+    </div>
+    <div class="info-card">
+      <span class="info-icon">⚡</span>
+      <div class="info-body"><strong>Slow / Weak 2nd</strong><span>Step well inside baseline. Take it early, hit on the rise. Dictate with pace or angle immediately.</span></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">1st Serve Return</div>
+    <div class="priority-box def">
+      <div class="priority-title">Defensive Priority — Get It In</div>
+      <ul class="priority-list">
+        <li>Compact swing — no big backswing on fast serves</li>
+        <li>Aim cross-court and deep (biggest margin)</li>
+        <li>Redirect pace rather than adding your own</li>
+        <li>Goal: start the rally, not win the point</li>
+        <li>Split step as server's racket meets ball</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">2nd Serve Return</div>
+    <div class="priority-box off">
+      <div class="priority-title">Offensive Opportunity — Take Control</div>
+      <ul class="priority-list">
+        <li>Step inside the baseline — take it on the rise</li>
+        <li>Go for angles or drive it deep cross-court</li>
+        <li>Attack the weaker side consistently</li>
+        <li>Consider chip & charge on very slow serves</li>
+        <li>Make server feel the pressure of every 2nd serve</li>
+      </ul>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Return Patterns</div>
+
+    <div class="num-card">
+      <div class="num-head"><span class="num-badge">1</span><span class="num-title">Down the Middle</span></div>
+      <div class="num-desc">Safe, high-percentage return. Neutralizes serve angles, limits opponent's attack options. Best on 1st serve.</div>
+      <div class="num-tags">
+        <div class="num-tag"><div class="nt-label">Cue</div><div class="nt-val">Aim 3 feet over net, bisect the court</div></div>
+        <div class="num-tag"><div class="nt-label">Use When</div><div class="nt-val">When under pressure or returning big serves</div></div>
+      </div>
+    </div>
+
+    <div class="num-card">
+      <div class="num-head"><span class="num-badge">2</span><span class="num-title">Cross-Court Angle</span></div>
+      <div class="num-desc">Opens the court and pulls opponent wide. Use on 2nd serve when you have time to set up.</div>
+      <div class="num-tags">
+        <div class="num-tag"><div class="nt-label">Cue</div><div class="nt-val">Step in, hit early, aim inside-out</div></div>
+        <div class="num-tag"><div class="nt-label">Use When</div><div class="nt-val">2nd serve → attack wide</div></div>
+      </div>
+    </div>
+
+    <div class="num-card">
+      <div class="num-head"><span class="num-badge">3</span><span class="num-title">Down the Line</span></div>
+      <div class="num-desc">Catches opponent flat-footed when they shade cross-court. High risk, high reward.</div>
+      <div class="num-tags">
+        <div class="num-tag"><div class="nt-label">Cue</div><div class="nt-val">Short backswing, contact in front</div></div>
+        <div class="num-tag"><div class="nt-label">Use When</div><div class="nt-val">When opponent predictably charges net</div></div>
+      </div>
+    </div>
+
+    <div class="num-card">
+      <div class="num-head"><span class="num-badge">4</span><span class="num-title">Chip & Charge</span></div>
+      <div class="num-desc">Block the return low at opponent's feet, immediately follow to net. Disrupts rhythm on slow serves.</div>
+      <div class="num-tags">
+        <div class="num-tag"><div class="nt-label">Cue</div><div class="nt-val">Slice volley → sprint → net</div></div>
+        <div class="num-tag"><div class="nt-label">Use When</div><div class="nt-val">On weak 2nd serves, slow clay</div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Mental Approach</div>
+    <div class="mini-highlight">
+      <div class="mh-title">Pre-Return Routine</div>
+      <div class="mh-body">Between serves: bounce on your toes, pick a target, commit before the toss. Decision before the ball is hit.</div>
+    </div>
+    <div class="mini-highlight">
+      <div class="mh-title">After an Ace</div>
+      <div class="mh-body">Reset immediately. Aces are noise — stay ready for the next return. One point at a time.</div>
+    </div>
+    <div class="mini-highlight">
+      <div class="mh-title">Return Game Focus Word</div>
+      <div class="mh-body">Pick one: "Ready" · "Attack" · "In play". Repeat it as the server bounces the ball.</div>
+    </div>
+  </div>
+</div>
+
+<div id="warmup">
+  <div class="hero-card green">
+    <div class="hero-eyebrow">Warm-Up Routine</div>
+    <div class="hero-title">10-Minute Protocol</div>
+    <div class="hero-desc">A consistent pre-match warm-up reduces injury risk, sharpens touch, and sets your mental tone before the first point.</div>
+    <div class="hero-bullet"><span class="hero-dot"></span>Start 10–15 minutes before your match</div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Before You Hit — Dynamic Movement</div>
+    <div class="strat-hint">Do these 5 minutes before going on court.</div>
+
+    <div class="move-row"><div><div class="move-name">Leg Swings</div><div class="move-desc">Forward/back + side-to-side. Loosen hip flexors.</div></div><span class="move-badge">10 each leg</span></div>
+    <div class="move-row"><div><div class="move-name">Arm Circles</div><div class="move-desc">Small to large. Shoulder prep for serves.</div></div><span class="move-badge">10 each dir</span></div>
+    <div class="move-row"><div><div class="move-name">High Knees</div><div class="move-desc">Get blood moving. Activates glutes and calves.</div></div><span class="move-badge">20 steps</span></div>
+    <div class="move-row"><div><div class="move-name">Lateral Shuffle</div><div class="move-desc">Quick steps, stay low. Tennis-specific movement.</div></div><span class="move-badge">4 court widths</span></div>
+    <div class="move-row"><div><div class="move-name">Wrist Rolls</div><div class="move-desc">Forearm and wrist warm-up for groundstrokes.</div></div><span class="move-badge">10 each dir</span></div>
+    <div class="move-row"><div><div class="move-name">Torso Rotations</div><div class="move-desc">Mimic swing motion. Core and back activation.</div></div><span class="move-badge">10 each side</span></div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">On-Court Protocol</div>
+
+    <div class="timeline-card c1">
+      <div><div class="tl-time">0:00</div><div class="tl-dur">2 min</div></div>
+      <div>
+        <div class="tl-title">🎾 Mini Tennis</div>
+        <ul class="tl-list">
+          <li>Stand at the service box, hit soft volleys and drops</li>
+          <li>Focus on touch and feel — easy, loose swings</li>
+          <li>Get eyes tracking the ball, hands warming up</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="timeline-card c2">
+      <div><div class="tl-time">2:00</div><div class="tl-dur">2 min</div></div>
+      <div>
+        <div class="tl-title">↔️ Baseline Rallies</div>
+        <ul class="tl-list">
+          <li>Move to the baseline, hit forehands and backhands</li>
+          <li>Keep it in — medium pace, deep cross-court</li>
+          <li>Find your rhythm before increasing pace</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="timeline-card c3">
+      <div><div class="tl-time">4:00</div><div class="tl-dur">1:30 min</div></div>
+      <div>
+        <div class="tl-title">📖 Net Play</div>
+        <ul class="tl-list">
+          <li>Hit volleys from midcourt — forehand and backhand</li>
+          <li>Work 2–3 overheads from each side</li>
+          <li>Focus on short, firm volleys — no big swings</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="timeline-card c4">
+      <div><div class="tl-time">5:30</div><div class="tl-dur">2 min</div></div>
+      <div>
+        <div class="tl-title">💥 Serves</div>
+        <ul class="tl-list">
+          <li>Start with easy serves — pace up gradually</li>
+          <li>Hit both 1st and 2nd serve patterns</li>
+          <li>Pick your serve for the first game now</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="timeline-card c5">
+      <div><div class="tl-time">7:30</div><div class="tl-dur">2:30 min</div></div>
+      <div>
+        <div class="tl-title">🧠 Returns & Mental Prep</div>
+        <ul class="tl-list">
+          <li>Return a few serves — get eyes on ball speed</li>
+          <li>Set your focus word for the match</li>
+          <li>Visualize winning the first 2 games</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Mental Readiness Checklist</div>
+    <div class="check-row"><span class="check-circle"></span>I know my 1st serve direction for game 1</div>
+    <div class="check-row"><span class="check-circle"></span>I know my return target (cross-court deep)</div>
+    <div class="check-row"><span class="check-circle"></span>I have a focus word for this match</div>
+    <div class="check-row"><span class="check-circle"></span>I've identified their biggest weapon to neutralize</div>
+    <div class="check-row"><span class="check-circle"></span>I'm ready to compete for the first point</div>
+
+    <div class="note-box">
+      <strong>Note — The Code</strong>
+      Per USTA regulations, each player is entitled to a warm-up of up to 5 minutes on court (or as mutually agreed). Use this time purposefully — it's part of the match.
+    </div>
+  </div>
+</div>
+
+<div id="scoring">
+  <div class="section-block" style="margin-top:4px;">
+    <div class="block-label">Quick Reference</div>
+    <div class="ref-table">
+      <div class="ref-row"><span class="ref-label">Both at 40</span><span class="ref-val">Deuce</span></div>
+      <div class="ref-row"><span class="ref-label">Server wins point after Deuce</span><span class="ref-val">Ad-In</span></div>
+      <div class="ref-row"><span class="ref-label">Receiver wins point after Deuce</span><span class="ref-val">Ad-Out</span></div>
+      <div class="ref-row"><span class="ref-label">Ad player loses next point</span><span class="ref-val">Back to Deuce</span></div>
+      <div class="ref-row"><span class="ref-label">6–6 in regular set</span><span class="ref-val">7-pt Tiebreak</span></div>
+      <div class="ref-row"><span class="ref-label">8–8 in pro-set</span><span class="ref-val">7-pt Tiebreak</span></div>
+      <div class="ref-row"><span class="ref-label">Tied in sets (most formats)</span><span class="ref-val">Super Tiebreak</span></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Match Formats</div>
+    <div class="strat-hint">Tap to expand</div>
+
+    <div class="exp-card green">
+      <div class="exp-head" onclick="toggleExp(this)"><span class="exp-icon">🎾</span><span class="exp-title">Ad Scoring</span><span class="exp-chevron">⌄</span></div>
+      <div class="exp-body">
+        <ul>
+          <li>Points are scored as: Love (0), 15, 30, 40, Game.</li>
+          <li>When both players reach 40, the score is Deuce.</li>
+          <li>After deuce, the server wins the next point → Ad-In; receiver wins it → Ad-Out.</li>
+          <li>The player with the Ad must win the next point to win the game.</li>
+          <li>If the Ad player loses the point, the score returns to Deuce.</li>
+          <li>There is no limit to the number of Deuces in a single game.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-card orange">
+      <div class="exp-head" onclick="toggleExp(this)"><span class="exp-icon">⚡</span><span class="exp-title">Pro-Set</span><span class="exp-chevron">⌄</span></div>
+      <div class="exp-body">
+        <ul>
+          <li>The winner must reach 8 games to win the set.</li>
+          <li>If the score reaches 8–8, a 7-point tiebreaker is played.</li>
+          <li>Common in freshman and JV tennis, and varsity doubles during the regular season.</li>
+          <li>No second set — the match is decided in one pro-set.</li>
+          <li>Tiebreak rules are identical to those used at 6–6 in a regular set.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-card orange">
+      <div class="exp-head" onclick="toggleExp(this)"><span class="exp-icon">🔥</span><span class="exp-title">7-Point Tiebreaker</span><span class="exp-chevron">⌄</span></div>
+      <div class="exp-body">
+        <ul>
+          <li>First to 7 points wins, must win by 2.</li>
+          <li>The player whose turn it is to serve starts the tiebreak (1 point from the right court).</li>
+          <li>After the first point, players alternate serving in groups of 2.</li>
+          <li>Players change ends after every 6 total points.</li>
+          <li>If the score reaches 6–6, change ends and keep serving in sequence until one player leads by 2.</li>
+          <li>The set is recorded as 7–6.</li>
+          <li>After the tiebreak the team who received the first point in the tiebreaker is now the first to serve in the next set.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-card red">
+      <div class="exp-head" onclick="toggleExp(this)"><span class="exp-icon">🏆</span><span class="exp-title">Super Tiebreaker (10-Point)</span><span class="exp-chevron">⌄</span></div>
+      <div class="exp-body">
+        <ul>
+          <li>First to 10 points wins, must win by 2.</li>
+          <li>Same serving rotation as a 7-point tiebreaker.</li>
+          <li>Change ends when the total point score equals a multiple of 6 (e.g. 3–3, 0–6, 7–5, 6–6…).</li>
+          <li>Doubles partners preserve their serving sequence throughout.</li>
+          <li>You may change doubles service order for 10-point tiebreakers.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Tiebreak Serving Order</div>
+    <div class="tb-toggle">
+      <div class="tb-toggle-btn active" onclick="showTiebreak('singles', this)">Singles</div>
+      <div class="tb-toggle-btn" onclick="showTiebreak('doubles', this)">Doubles</div>
+    </div>
+
+    <div class="tb-table" id="tb-singles">
+      <div class="tb-header-row"><span>Points</span><span>Server</span><span>Court</span></div>
+      <div class="tb-row"><span>1</span><span class="tb-server a">A</span><span>Deuce</span></div>
+      <div class="tb-row"><span>2–3</span><span class="tb-server b">B</span><span>Ad → Deuce</span></div>
+      <div class="tb-row"><span>4–5</span><span class="tb-server a">A</span><span>Ad → Deuce</span></div>
+      <div class="tb-row"><span>6</span><span class="tb-server b">B</span><span>Ad</span></div>
+      <div class="tb-row change-ends">↔ CHANGE ENDS</div>
+      <div class="tb-row"><span>7</span><span class="tb-server b">B</span><span>Deuce</span></div>
+      <div class="tb-row"><span>8–9</span><span class="tb-server a">A</span><span>Ad → Deuce</span></div>
+      <div class="tb-row"><span>10–11</span><span class="tb-server b">B</span><span>Ad → Deuce</span></div>
+      <div class="tb-row"><span>12</span><span class="tb-server a">A</span><span>Ad</span></div>
+    </div>
+
+    <div class="tb-table" id="tb-doubles" style="display:none;">
+      <div class="tb-header-row"><span>Points</span><span>Server</span><span>Court</span></div>
+      <div class="tb-row"><span>1</span><span class="tb-server a">A</span><span>Deuce</span></div>
+      <div class="tb-row"><span>2–3</span><span class="tb-server a">C</span><span>Ad → Deuce</span></div>
+      <div class="tb-row"><span>4–5</span><span class="tb-server b">B</span><span>Ad → Deuce</span></div>
+      <div class="tb-row"><span>6</span><span class="tb-server a">D</span><span>Ad</span></div>
+      <div class="tb-row change-ends">↔ CHANGE ENDS</div>
+      <div class="tb-row"><span>7</span><span class="tb-server a">D</span><span>Deuce</span></div>
+      <div class="tb-row"><span>8–9</span><span class="tb-server b">A</span><span>Ad → Deuce</span></div>
+      <div class="tb-row"><span>10–11</span><span class="tb-server a">C</span><span>Ad → Deuce</span></div>
+      <div class="tb-row"><span>12</span><span class="tb-server b">B</span><span>Ad</span></div>
+    </div>
+    <div class="shot-caption" id="tb-caption" style="text-align:center; margin-top:10px;">First to 7, win by 2. Serve rotates every 2 points after point 1.</div>
+  </div>
+</div>
+
+<div id="rules">
+  <div class="section-block" style="margin-top:4px;">
+    <div class="block-label">The Code — USTA Unwritten Rules</div>
+    <div class="strat-hint">These are the principles of conduct expected from players when no official is present. When in doubt, give the point to your opponent.</div>
+
+    <div class="golden-rule"><strong>Golden Rule:</strong> Any doubt must be resolved in favor of your opponent. A ball cannot be called out unless you clearly see space between where it lands and the line.</div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">The Code — By Category</div>
+    <div class="strat-hint">Tap a section to expand all rules</div>
+
+    <div class="exp-card green">
+      <div class="exp-head" onclick="toggleExp(this)"><span class="exp-icon">✅</span><span class="exp-title">Principles</span><span style="margin-left:auto; font-size:11px; color:var(--muted); font-weight:600;">5 rules</span><span class="exp-chevron">⌄</span></div>
+      <div class="exp-body">
+        <ul>
+          <li><strong style="display:block;color:var(--text);">Courtesy is expected</strong>Tennis requires cooperation and good sportsmanship from both players at all times.</li>
+          <li><strong style="display:block;color:var(--text);">Points played in good faith</strong>All points should be played in good faith. A mistake in discovered afterward (e.g. rest was too high, wrong score) does not undo a point already played.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-card orange">
+      <div class="exp-head" onclick="toggleExp(this)"><span class="exp-icon">🔥</span><span class="exp-title">Warm-Up</span><span style="margin-left:auto; font-size:11px; color:var(--muted); font-weight:600;">2 rules</span><span class="exp-chevron">⌄</span></div>
+      <div class="exp-body">
+        <ul>
+          <li><strong style="display:block;color:var(--text);">Warm-up is not practice</strong>Provide your opponent a 5–10 minute warm-up. Hit shots directly to them. Declining to hit warm-up serves forfeits your right to base serves at a moderate pace without disrupting the warm-up.</li>
+          <li><strong style="display:block;color:var(--text);">Warm-up serves before the first point</strong>All warm-up serves must be taken before the first point of the match. Return warm-up serves at a moderate pace without disrupting the warm-up.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-card green">
+      <div class="exp-head" onclick="toggleExp(this)"><span class="exp-icon">✅</span><span class="exp-title">Making Calls</span><span style="margin-left:auto; font-size:11px; color:var(--muted); font-weight:600;">14 rules</span><span class="exp-chevron">⌄</span></div>
+      <div class="exp-body">
+        <ul>
+          <li><strong style="display:block;color:var(--text);">You call your own side</strong>A player calls all shots landing on, or aimed at, their side of the court.</li>
+          <li><strong style="display:block;color:var(--text);">Opponent gets benefit of the doubt</strong>Any doubt must be resolved in favor of your opponent. When you play a shot without a call, you're saying you're self-interested in the standard.</li>
+          <li><strong style="display:block;color:var(--text);">Ball touching any part of a line is good</strong>That ball is 100% good if it touches any part of the line — even a hairline touch counts as in.</li>
+          <li><strong style="display:block;color:var(--text);">Ball that can't be called out is good</strong>You may not call a ball out because you didn't see it land. If you can't call it with certainty, it is in.</li>
+          <li><strong style="display:block;color:var(--text);">Either doubles partner may call</strong>Either doubles partner may call a ball out — but the player closest to the line has the advantage in accuracy when calling the line across.</li>
+          <li><strong style="display:block;color:var(--text);">All points are treated equally</strong>There is no distinction for treating a match point differently from a regular point. All points matter the same way.</li>
+          <li><strong style="display:block;color:var(--text);">Requesting your opponent's help</strong>If you ask your opponent for help on a line call, and they give a positive, definite opinion, it is accepted. A negative opinion, or no opinion, does not overrule the call.</li>
+          <li><strong style="display:block;color:var(--text);">Reversing a call</strong>If you called a ball out and then realize it was good, you must reverse the call. The point goes to your opponent — it is replayed.</li>
+          <li><strong style="display:block;color:var(--text);">Call your own shots out</strong>With the exception of the first serve, call your own shots that land out. If you clearly see out, call it — even if not asked.</li>
+          <li><strong style="display:block;color:var(--text);">Partners disagree on a call</strong>If partners disagree on a call and the other side agrees, the point stands. Tell your partner and concede the point.</li>
+          <li><strong style="display:block;color:var(--text);">Calls must be audible or visible</strong>No matter how obvious it seems, your opponent is entitled to a prompt and audible or visible signal.</li>
+          <li><strong style="display:block;color:var(--text);">Spectators never make calls</strong>Never enlist a spectator to help with a call in a match. Only the players are entitled to make calls.</li>
+          <li><strong style="display:block;color:var(--text);">Make calls promptly</strong>A call must be made before your return goes out of play or a chance to hit it has passed. Delayed calls give the opponent no chance to react — not to your opponent's benefit.</li>
+          <li><strong style="display:block;color:var(--text);">Clay court marks</strong>On clay, if any part of a ball mark touches the line, call it good. A careful look at the closest edge is used, take a good post-play look before marks are erased.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-card green">
+      <div class="exp-head" onclick="toggleExp(this)"><span class="exp-icon">✅</span><span class="exp-title">Serving</span><span style="margin-left:auto; font-size:11px; color:var(--muted); font-weight:600;">8 rules</span><span class="exp-chevron">⌄</span></div>
+      <div class="exp-body">
+        <ul>
+          <li><strong style="display:block;color:var(--text);">Third ball request</strong>When a server requests three balls, the receiver must comply when the third ball is readily available. Distant balls are retrieved at the end of a game.</li>
+          <li><strong style="display:block;color:var(--text);">Avoid foot faults</strong>It is the server's responsibility to avoid foot faults. If your opponent tells you that you are foot faulting, take their word and correct your motion.</li>
+          <li><strong style="display:block;color:var(--text);">Calling foot faults</strong>The receiver may only call foot faults while warming the server and attempting to get an official, and only if flagrant and clearly visible.</li>
+          <li><strong style="display:block;color:var(--text);">Service calls in doubles</strong>The receiver's partner may call the service line; either server may call anything they clearly see.</li>
+          <li><strong style="display:block;color:var(--text);">Serving team doesn't call first serves out</strong>The server or their partner shall not call out on the first serve — the receiver has the benefit of the doubt. Exception: if the receiver doesn't call the fault, the server may call their own fault, but must do so clearly.</li>
+          <li><strong style="display:block;color:var(--text);">Service let calls in doubles</strong>Any player may call a service let — provided that before their return goes out of play or a "second let" is not called.</li>
+          <li><strong style="display:block;color:var(--text);">Don't play obvious faults into play</strong>Calling a ball that is obviously fault out into play is rude and unsportsmanlike.</li>
+          <li><strong style="display:block;color:var(--text);">Receiver readiness</strong>The receiver plays to the server's reasonable pace. If a ball being served hits the receiver while a delay was reasonable, the point is replayed.</li>
+          <li><strong style="display:block;color:var(--text);">Delays during service</strong>If a ball rolls onto court during a serve, the delay was noticed by the server, one serve only.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-card orange">
+      <div class="exp-head" onclick="toggleExp(this)"><span class="exp-icon">🔥</span><span class="exp-title">Hindrance</span><span style="margin-left:auto; font-size:11px; color:var(--muted); font-weight:600;">6 rules</span><span class="exp-chevron">⌄</span></div>
+      <div class="exp-body">
+        <ul>
+          <li><strong style="display:block;color:var(--text);">Stop-play immediately</strong>A player who observes a hindrance must stop play as soon as possible.</li>
+          <li><strong style="display:block;color:var(--text);">Talking during points</strong>Singles players should not talk during points. Doubles partners may talk between points, but talk that interferes with an opponent's play is a hindrance.</li>
+          <li><strong style="display:block;color:var(--text);">Body movement</strong>A player may move their body while a ball is in play. A player may not sound or move deliberately to distract an opponent when leaving footfall is not.</li>
+          <li><strong style="display:block;color:var(--text);">Unintentional hindrance</strong>A player hindered by an unintentional act — if they could have made the shot but were hindered — asks for a let to be replayed.</li>
+          <li><strong style="display:block;color:var(--text);">Grunting</strong>Avoid grunting and loud noises. If grunting affects the outcome of a point, it is an official hindrance — but only if the opponent notices it and complains.</li>
+          <li><strong style="display:block;color:var(--text);">Injury caused by a player</strong>If a player accidentally injures an opponent and continues, the opponent continues by default.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-card red">
+      <div class="exp-head" onclick="toggleExp(this)"><span class="exp-icon">⚠️</span><span class="exp-title">Ball Issues</span><span style="margin-left:auto; font-size:11px; color:var(--muted); font-weight:600;">4 rules</span><span class="exp-chevron">⌄</span></div>
+      <div class="exp-body">
+        <ul>
+          <li><strong style="display:block;color:var(--text);">Let when a ball rolls onto court</strong>If a ball becomes aware of a ball entering the court, the right is entitled to a let unconditionally.</li>
+          <li><strong style="display:block;color:var(--text);">Ball-call ejections</strong>Promptly acknowledge when a ball touches you: you lose the point if a ball crosses the net or crosses back over the net before your opponent's chance takes their shot.</li>
+          <li><strong style="display:block;color:var(--text);">Retrieving stray balls</strong>Each player retrieves and returns balls from their side. Do not delay play a request for balls returned promptly, and cooperate quickly if a ball is played.</li>
+          <li><strong style="display:block;color:var(--text);">Catching a ball</strong>If a ball is caught before it bounces, the opponent wins the point — regardless of where you were.</li>
+        </ul>
+      </div>
+    </div>
+
+    <div class="exp-card orange">
+      <div class="exp-head" onclick="toggleExp(this)"><span class="exp-icon">🔥</span><span class="exp-title">Miscellaneous</span><span style="margin-left:auto; font-size:11px; color:var(--muted); font-weight:600;">5 rules</span><span class="exp-chevron">⌄</span></div>
+      <div class="exp-body">
+        <ul>
+          <li><strong style="display:block;color:var(--text);">Stalling</strong>Excessive continuous stalling: Actions taken to delay a third stalling call may result in a warning, point penalty, or a code violation.</li>
+          <li><strong style="display:block;color:var(--text);">When to contact an official</strong>Contact an official for flagrant, repeated foot faults, extreme stalling, unsportsmanlike behavior, or when you refuse to call anything you saw and are asked.</li>
+          <li><strong style="display:block;color:var(--text);">Equipment malfunction</strong>If clothing or equipment breaks mid-point, if a broken racket string is suspected, play continues until the point ends. For broken strings, delay a replacement to the next changeover.</li>
+          <li><strong style="display:block;color:var(--text);">Towel placement</strong>Towels go around the outside of the court, not on the court itself. A ball that hits a towel or clothing is a lost point for whoever placed it.</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Do's & Don'ts</div>
+    <div class="key-row"><span class="key-icon">✅</span><span class="key-text">Call the ball good when uncertain</span></div>
+    <div class="key-row"><span class="key-icon">✅</span><span class="key-text">Reversal call if you realize it was wrong</span></div>
+    <div class="key-row"><span class="key-icon">✅</span><span class="key-text">Stop play immediately when claiming a hindrance</span></div>
+    <div class="key-row"><span class="key-icon">✅</span><span class="key-text">Let a ball hit twice if you see it fall out</span></div>
+    <div class="key-row"><span class="key-icon">✅</span><span class="key-text">Enlist a spectator to make a call</span></div>
+    <div class="key-row"><span class="key-icon">❌</span><span class="key-text">Put an obvious fault into play</span></div>
+    <div class="key-row"><span class="key-icon">❌</span><span class="key-text">Call a ball out after you realize you don't know</span></div>
+    <div class="key-row"><span class="key-icon">❌</span><span class="key-text">React violently to a call</span></div>
+  </div>
+</div>
+
+<div id="court">
+  <div class="section-block" style="margin-top:4px;">
+    <div class="block-label">Court Diagram</div>
+    <div class="court-diagram-wrap">
+      <div class="court-diagram-title">Tennis Court — Top Down</div>
+      <div class="court-diagram-sub">Singles 27 ft · Doubles 36 ft · Length 78 ft</div>
+      <svg viewBox="0 0 300 460" style="width:100%; height:auto;">
+        <!-- Outer doubles court -->
+        <rect x="20" y="10" width="260" height="440" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+        <!-- Singles sidelines -->
+        <line x1="53" y1="10" x2="53" y2="450" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+        <line x1="247" y1="10" x2="247" y2="450" stroke="rgba(255,255,255,0.35)" stroke-width="1.5"/>
+
+        <!-- Zone bands: defend / neutral / attack (top half) -->
+        <rect x="53" y="10"  width="194" height="60"  fill="#ef5a5a" opacity="0.16"/>
+        <rect x="53" y="70"  width="194" height="55"  fill="#5b9bf5" opacity="0.16"/>
+        <rect x="53" y="125" width="194" height="105" fill="#f0954a" opacity="0.14"/>
+        <!-- Zone bands: attack / neutral / defend (bottom half) -->
+        <rect x="53" y="230" width="194" height="105" fill="#f0954a" opacity="0.14"/>
+        <rect x="53" y="335" width="194" height="55"  fill="#5b9bf5" opacity="0.16"/>
+        <rect x="53" y="390" width="194" height="60"  fill="#ef5a5a" opacity="0.16"/>
+        <!-- Kill zone around service line (center strip) -->
+        <rect x="53" y="125" width="194" height="18" fill="#8fd13f" opacity="0.22"/>
+        <rect x="53" y="317" width="194" height="18" fill="#8fd13f" opacity="0.22"/>
+
+        <!-- Service boxes -->
+        <line x1="53" y1="125" x2="247" y2="125" stroke="rgba(255,255,255,0.35)" stroke-width="1.2"/>
+        <line x1="53" y1="335" x2="247" y2="335" stroke="rgba(255,255,255,0.35)" stroke-width="1.2"/>
+        <line x1="150" y1="125" x2="150" y2="335" stroke="rgba(255,255,255,0.35)" stroke-width="1.2"/>
+
+        <!-- Net -->
+        <line x1="20" y1="230" x2="280" y2="230" stroke="#fff" stroke-width="2"/>
+        <circle cx="20" cy="230" r="3" fill="#fff"/>
+        <circle cx="280" cy="230" r="3" fill="#fff"/>
+
+        <!-- Labels -->
+        <text x="100" y="24" fill="rgba(255,255,255,0.55)" font-size="10" text-anchor="middle">Deuce</text>
+        <text x="200" y="24" fill="rgba(255,255,255,0.55)" font-size="10" text-anchor="middle">Ad</text>
+        <text x="100" y="444" fill="rgba(255,255,255,0.55)" font-size="10" text-anchor="middle">Ad</text>
+        <text x="200" y="444" fill="rgba(255,255,255,0.55)" font-size="10" text-anchor="middle">Deuce</text>
+
+        <text x="100" y="180" fill="rgba(255,255,255,0.4)" font-size="9" text-anchor="middle">Service box</text>
+        <text x="200" y="180" fill="rgba(255,255,255,0.4)" font-size="9" text-anchor="middle">Service box</text>
+        <text x="100" y="285" fill="rgba(255,255,255,0.4)" font-size="9" text-anchor="middle">Service box</text>
+        <text x="200" y="285" fill="rgba(255,255,255,0.4)" font-size="9" text-anchor="middle">Service box</text>
+
+        <text x="10" y="14" fill="rgba(255,255,255,0.3)" font-size="8" text-anchor="middle">Baseline</text>
+        <text x="10" y="446" fill="rgba(255,255,255,0.3)" font-size="8" text-anchor="middle">Baseline</text>
+        <text x="290" y="129" fill="rgba(255,255,255,0.3)" font-size="8" text-anchor="middle">Svc line</text>
+        <text x="290" y="339" fill="rgba(255,255,255,0.3)" font-size="8" text-anchor="middle">Svc line</text>
+
+        <text x="35" y="8" fill="rgba(239,90,90,0.7)" font-size="8" text-anchor="middle">Defend</text>
+        <text x="35" y="68" fill="rgba(91,155,245,0.75)" font-size="8" text-anchor="middle">Neutral</text>
+        <text x="35" y="123" fill="rgba(240,149,74,0.8)" font-size="8" text-anchor="middle">Attack</text>
+        <text x="35" y="337" fill="rgba(240,149,74,0.8)" font-size="8" text-anchor="middle">Attack</text>
+        <text x="35" y="392" fill="rgba(91,155,245,0.75)" font-size="8" text-anchor="middle">Neutral</text>
+        <text x="35" y="452" fill="rgba(239,90,90,0.7)" font-size="8" text-anchor="middle">Defend</text>
+
+        <!-- Net measurement callout -->
+        <line x1="20" y1="245" x2="20" y2="255" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+        <text x="20" y="266" fill="rgba(255,255,255,0.4)" font-size="8" text-anchor="middle">3.5 ft</text>
+        <text x="150" y="226" fill="rgba(255,255,255,0.5)" font-size="8" text-anchor="middle">3 ft</text>
+        <line x1="280" y1="245" x2="280" y2="255" stroke="rgba(255,255,255,0.3)" stroke-width="1"/>
+        <text x="280" y="266" fill="rgba(255,255,255,0.4)" font-size="8" text-anchor="middle">3.5 ft</text>
+      </svg>
+    </div>
+
+    <div class="legend-grid">
+      <div class="legend-chip"><span class="legend-dot defend"></span><div class="legend-text"><strong>Defend Zone</strong><span>6+ ft behind baseline</span></div></div>
+      <div class="legend-chip"><span class="legend-dot neutral"></span><div class="legend-text"><strong>Neutral Zone</strong><span>Behind baseline, comfortable</span></div></div>
+      <div class="legend-chip"><span class="legend-dot attack"></span><div class="legend-text"><strong>Attack Zone</strong><span>Inside baseline</span></div></div>
+      <div class="legend-chip"><span class="legend-dot kill"></span><div class="legend-text"><strong>Kill Zone</strong><span>Around the service line</span></div></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Key Dimensions</div>
+    <div class="ref-table">
+      <div class="ref-row"><span class="ref-label">Court length</span><span class="ref-val">78 ft (23.77 m)</span></div>
+      <div class="ref-row"><span class="ref-label">Singles width</span><span class="ref-val">27 ft (8.23 m)</span></div>
+      <div class="ref-row"><span class="ref-label">Doubles width</span><span class="ref-val">36 ft (10.97 m)</span></div>
+      <div class="ref-row"><span class="ref-label">Service box depth</span><span class="ref-val">21 ft (6.40 m)</span></div>
+      <div class="ref-row"><span class="ref-label">Alley width</span><span class="ref-val">4.5 ft (1.37 m)</span></div>
+      <div class="ref-row"><span class="ref-label">Net height — center</span><span class="ref-val">3 ft (0.914 m)</span></div>
+      <div class="ref-row"><span class="ref-label">Net height — posts</span><span class="ref-val">3.5 ft (1.07 m)</span></div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Court Zones</div>
+
+    <div class="zone-card kill">
+      <div class="zone-top"><span class="zone-name">Kill Zone</span><span class="zone-loc">Around the service line</span></div>
+      <div class="zone-desc">Finish the point. All attacking-zone rules apply. Volley or put away.</div>
+    </div>
+
+    <div class="zone-card attack">
+      <div class="zone-top"><span class="zone-name">Attack Zone</span><span class="zone-loc">Inside the baseline</span></div>
+      <div class="zone-desc">Court has shortened — keep the ball within 3 ft over the net.</div>
+    </div>
+
+    <div class="zone-card neutral">
+      <div class="zone-top"><span class="zone-name">Neutral Zone</span><span class="zone-loc">Behind baseline, comfortable</span></div>
+      <div class="zone-desc">Focus on depth. Hit 3–6 ft over the net with topspin to push opponent back.</div>
+    </div>
+
+    <div class="zone-card defend">
+      <div class="zone-top"><span class="zone-name">Defend Zone</span><span class="zone-loc">6+ feet behind the baseline</span></div>
+      <div class="zone-desc">Hit at least 6 ft over the net. Prioritize consistency, depth, and recovery time.</div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Deuce vs. Ad Court</div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-label">Deuce Court</div>
+        <div class="card-value">Right side. Served into when score is 0-0, 15-15, 30-30, deuce.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">Ad Court</div>
+        <div class="card-value">Left side. Served into on 15-0, 0-15, 30-0, 0-30, Ad in/out.</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-block">
+    <div class="block-label">Surface Notes</div>
+    <div class="card-grid">
+      <div class="card">
+        <div class="card-label">🟦 Hard</div>
+        <div class="card-value">Medium pace. Consistent bounce. Favors all-court game.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">🟫 Clay</div>
+        <div class="card-value">Slow. High bounce. Favors baseliners and topspin heavy hitters.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">🟩 Grass</div>
+        <div class="card-value">Fast. Low bounce. Favors serve-and-volley, slice.</div>
+      </div>
+      <div class="card">
+        <div class="card-label">🔵 Indoor/Carpet</div>
+        <div class="card-value">Very fast. Low bounce. Similar to grass play style.</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="bottomnav">
+  <div class="navitem" onclick="goHome()" style="cursor:pointer;"><span class="navicon">⊞</span>Home</div>
+  <div class="navitem" onclick="goHome()" style="cursor:pointer;"><span class="navicon">👥</span>Players</div>
+  <div class="navitem active" onclick="goHome()" style="cursor:pointer;"><span class="navicon">📖</span>Playbook</div>
+</div>
+
+</div><!-- /pages-wrap -->
+
+<script>
+  function toggleStrat(el) {
+    el.classList.toggle('open');
+  }
+  function togglePrinciple(el) {
+    el.classList.toggle('open');
+  }
+  function toggleExp(el) {
+    el.classList.toggle('open');
+  }
+
+  // ── Tiebreak singles/doubles toggle ──
+  function showTiebreak(which, btn) {
+    document.getElementById('tb-singles').style.display = which === 'singles' ? 'block' : 'none';
+    document.getElementById('tb-doubles').style.display = which === 'doubles' ? 'block' : 'none';
+    document.querySelectorAll('.tb-toggle-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+
+    const caption = document.getElementById('tb-caption');
+    caption.textContent = which === 'singles'
+      ? 'First to 7, win by 2. Serve rotates every 2 points after point 1.'
+      : 'Team (A & B) vs (C & D). Assumes D served game 12.';
+  }
+
+  // ── Page navigation: menu <-> detail pages ──
+  function goTo(sectionId) {
+    document.getElementById('menu-screen').style.display = 'none';
+    document.getElementById('pages-wrap').style.display = 'block';
+    document.querySelectorAll('#pages-wrap > div[id]').forEach(el => el.classList.remove('active'));
+    document.getElementById(sectionId).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+
+  function goHome() {
+    document.getElementById('pages-wrap').style.display = 'none';
+    document.getElementById('menu-screen').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'instant' });
+  }
+</script>
+
+</body>
+</html>
