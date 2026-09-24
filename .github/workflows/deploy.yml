@@ -1,0 +1,82 @@
+name: Build Playbook from Match Log
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  schedule:
+    - cron: '0 11 * * 1'   # every Monday, picks up Playbook edits in match-log
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          repository: codfather-debug/match-log
+          path: match-log
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Assemble Playbook-only site
+        run: |
+          mkdir -p pb/app
+          cp -r "match-log/app/(app)/playbook" pb/app/playbook
+          cp match-log/app/globals.css pb/app/
+          cp match-log/postcss.config.mjs match-log/tsconfig.json pb/
+          cd pb
+          cat > package.json <<'EOF'
+          {"name":"tennis-playbook","private":true,
+           "dependencies":{"next":"16.1.6","react":"19.2.3","react-dom":"19.2.3","lucide-react":"^0.577.0","geist":"^1"},
+           "devDependencies":{"@tailwindcss/postcss":"^4","tailwindcss":"^4","typescript":"^5","@types/react":"^19","@types/node":"^20"}}
+          EOF
+          cat > next.config.ts <<'EOF'
+          import type { NextConfig } from 'next'
+          const config: NextConfig = { output: 'export', basePath: '/tennis-playbook', trailingSlash: true, images: { unoptimized: true } }
+          export default config
+          EOF
+          cat > app/layout.tsx <<'EOF'
+          import type { Metadata, Viewport } from 'next'
+          import { GeistSans } from 'geist/font/sans'
+          import './globals.css'
+          export const metadata: Metadata = { title: 'Tennis Playbook', description: 'Match Log Playbook reference' }
+          export const viewport: Viewport = { width: 'device-width', initialScale: 1, themeColor: '#09090b' }
+          export default function RootLayout({ children }: { children: React.ReactNode }) {
+            return (
+              <html lang="en" className="dark">
+                <body className={`${GeistSans.variable} antialiased bg-zinc-950 text-zinc-100`}>
+                  <main className="mx-auto w-full max-w-2xl px-4 py-6 pb-16">{children}</main>
+                </body>
+              </html>
+            )
+          }
+          EOF
+          echo "export { default } from './playbook/page'" > app/page.tsx
+          npm install --no-audit --no-fund
+          npx next build
+          touch out/.nojekyll
+
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: pb/out
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4
